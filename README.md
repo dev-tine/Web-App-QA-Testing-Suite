@@ -61,25 +61,6 @@ My manual testing documentation includes:
 - Retesting and validation notes
 - Functional and UI testing coverage
 - Organized QA documentation based on internship-level testing workflows
-Before uploading any manual testing file, all confidential and proprietary information should be sanitized. This includes removing or replacing:
-
-- Company names
-- Client names
-- Internal system names
-- Employee names
-- Real user data
-- Private URLs
-- Credentials
-- Screenshots containing sensitive details
-- Internal business rules that should not be public
-Recommended sanitized replacements:
-
-- Company Name → Sample Company
-- Client Name → Sample Client
-- System Name → Web Application
-- Real User Name → Test User
-- Internal URL → sample-url.com
-- Actual Ticket ID → BUG-001 / TC-001
 
 ### Manual Testing Screenshots
 Dashboard Screenshot:
@@ -173,6 +154,6 @@ It is intended to support applications for entry-level and junior roles in softw
 
 ## Connect with Me
 
-- LinkedIn: `[Add your LinkedIn profile link here]`
-- Portfolio Website: `[Add your portfolio website link here]`
+- LinkedIn: `https://www.linkedin.com/in/destine-april-fortaliza/`
+- Portfolio Website: `https://www.devtine.xyz/`
 - GitHub: `https://github.com/dev-tine`
