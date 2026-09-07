@@ -1,12 +1,23 @@
 {
   "name": "playwright-qa-automation-practice",
   "version": "1.0.0",
+  "description": "Playwright UI automation suite for the Web App QA Testing Suite portfolio.",
   "main": "index.js",
-  "scripts": {},
-  "keywords": [],
-  "author": "",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test tests/portfolio-smoke.spec.js",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report"
+  },
+  "keywords": [
+    "playwright",
+    "qa",
+    "automation",
+    "testing"
+  ],
+  "author": "Destine April Fortaliza",
   "license": "ISC",
-  "description": "",
   "devDependencies": {
     "@playwright/test": "^1.61.0",
     "@types/node": "^26.0.0"
