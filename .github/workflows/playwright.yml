@@ -7,11 +7,14 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  smoke:
-    name: Smoke suite (chromium)
+  test:
+    name: Playwright suite
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: automation-tests
@@ -33,8 +36,11 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run smoke suite
-        run: npx playwright test tests/portfolio-smoke.spec.js --reporter=list,html
+      - name: Run the suite
+        env:
+          DEMO_EMAIL: ${{ secrets.DEMO_EMAIL }}
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+        run: npx playwright test
 
       - name: Upload Playwright report
         if: always()
@@ -43,3 +49,25 @@ jobs:
           name: playwright-report
           path: automation-tests/playwright-report/
           retention-days: 30
+
+      - name: Upload traces and videos from failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failure-artifacts
+          path: automation-tests/test-results/
+          retention-days: 14
+
+      - name: Commit refreshed evidence screenshots
+        if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manual-testing/screenshots/*.png || true
+          if git diff --staged --quiet; then
+            echo "No screenshot changes to commit."
+          else
+            git commit -m "chore: refresh evidence screenshots from CI [skip ci]"
+            git push
+          fi
