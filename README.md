@@ -68,7 +68,7 @@ Web-App-QA-Testing-Suite/
 
 ---
 
-## Three things this repository is trying to show
+## Four things this repository is trying to show
 
 ### 1. Automation that does not damage what it tests
 
@@ -98,7 +98,23 @@ open defect are annotated `test.fail()`, so:
 The suite tells the team when a bug is fixed, instead of relying on somebody
 remembering to re enable a test.
 
-### 3. A finding that was retracted, kept in the record
+### 3. A defect a person clicking around would never see
+
+The suite runs a preflight before any spec: it opens the application once and
+checks that the sign in form renders. When that failed, it printed what it
+actually received instead of only reporting a missing locator. The document
+title came back as "404: NOT_FOUND".
+
+The deployment serves no single page application fallback, so every bookmark,
+every shared link and every browser refresh on a sub route lands on the hosting
+provider's error page. Nobody clicking through the app would ever hit it,
+because in-app navigation never requests a new document. It is now DEF-111,
+Critical, with the one line fix in the defect log.
+
+That is the argument for automation that reports evidence rather than just
+pass or fail.
+
+### 4. A finding that was retracted, kept in the record
 
 A rendering defect was raised as Critical during the ECL cycle, then did not
 reproduce. The root cause was in the test environment, not the product: the
@@ -116,7 +132,7 @@ the [ECL case study](./manual-testing/case-studies/ecl-operations-hub/).
 
 | Area | Cases | Notes |
 |---|---|---|
-| Authentication and access control | 8 | Including access to protected routes after sign out |
+| Authentication and access control | 9 | Including deep link resolution and access after sign out |
 | Login page, field level and accessibility | 18 | WCAG 2.1 AA spot checks mapped to success criteria |
 | Officer home | 5 | |
 | Navigation and cross route structure | 10 | Title uniqueness, landmarks, accessible names |
@@ -125,9 +141,9 @@ the [ECL case study](./manual-testing/case-studies/ecl-operations-hub/).
 | Settings | 7 | Officer roster, directors, contacts |
 | Evidence capture | 12 | Desktop and mobile viewports |
 
-Ten defects are open against the AVIIHAI build, three Major and seven Minor. Each
-one has reproduction steps and, where it applies, the WCAG success criterion it
-breaches. See [`docs/DEFECT-LOG.md`](./docs/DEFECT-LOG.md).
+Eleven defects are open against the AVIIHAI build: one Critical, three Major and
+seven Minor. Each one has reproduction steps and, where it applies, the WCAG
+success criterion it breaches. See [`docs/DEFECT-LOG.md`](./docs/DEFECT-LOG.md).
 
 ---
 
