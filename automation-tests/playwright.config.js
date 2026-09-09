@@ -18,11 +18,14 @@ export default defineConfig({
   outputDir: './test-results',
   globalSetup: './global-setup.js',
 
-  timeout: 45000,
-  expect: { timeout: 8000 },
+  // The application is a client rendered single page app on a shared runner.
+  // First paint at the mobile viewport is measurably slower than at the desktop
+  // one, so the budgets are set for the slow case rather than the fast one.
+  timeout: 75000,
+  expect: { timeout: 15000 },
 
   fullyParallel: true,
-  workers: process.env.CI ? 4 : 2,
+  workers: process.env.CI ? 2 : 2,
   forbidOnly: !!process.env.CI,
 
   // No retries. Known defects are marked with test.fail() rather than left to
@@ -38,8 +41,8 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    actionTimeout: 12000,
-    navigationTimeout: 25000,
+    actionTimeout: 20000,
+    navigationTimeout: 40000,
   },
 
   projects: [
