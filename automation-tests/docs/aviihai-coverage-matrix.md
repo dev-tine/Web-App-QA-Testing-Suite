@@ -15,14 +15,15 @@ Defects: [`../../docs/DEFECT-LOG.md`](../../docs/DEFECT-LOG.md).
 
 | Case | Scenario | Type | Priority | Result | Defect |
 |---|---|---|---|---|---|
-| TC-AUTH-001 | The login page loads and renders every control | Smoke | High | Pass | |
-| TC-AUTH-002 | The root path sends an unauthenticated visitor to login | Security | High | Pass | |
+| TC-AUTH-001 | The application loads and renders the sign in form | Smoke | High | Pass | |
+| TC-AUTH-002 | The root path sends an unauthenticated visitor to the login view | Security | High | Pass | |
 | TC-AUTH-003 | Rejected credentials keep the user on the login page | Negative | High | Pass | |
-| TC-AUTH-004 | Protected routes are not reachable without a session | Security | High | Pass | |
+| TC-AUTH-004 | A protected route is not shown to a visitor without a session | Security | High | Pass | |
 | TC-AUTH-005 | A valid demo account reaches the officer home | Smoke | High | Pass | |
 | TC-AUTH-006 | The session survives a page reload | Functional | Medium | Pass | |
 | TC-AUTH-007 | Signing out returns the user to the login page | Functional | Medium | Pass | |
-| TC-AUTH-008 | A protected route is not reachable again after signing out | Security | High | Pass | |
+| TC-AUTH-008 | A protected route is not shown again after signing out | Security | High | Pass | |
+| TC-AUTH-009 | A deep link resolves to the application | Availability | Critical | Expected fail | DEF-111 |
 
 ## Login page, field level
 
