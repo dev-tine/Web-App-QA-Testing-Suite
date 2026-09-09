@@ -7,6 +7,12 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# Only the newest run per branch matters. A burst of commits cancels the
+# superseded runs instead of queueing a dozen identical suites.
+concurrency:
+  group: playwright-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
