@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AppPage } from './pages/AppPage.js';
-import { loginAsDemoUser, hasCredentials, CREDENTIALS_MISSING } from './helpers/auth-helper.js';
+import { loginAsDemoUser, clientNavigate, hasCredentials, CREDENTIALS_MISSING } from './helpers/auth-helper.js';
 
 /**
  * Navigation and cross route structure.
@@ -39,7 +39,7 @@ test.describe('Navigation and cross route structure', () => {
 
   test('TC-NAV-002 /clearance redirects to the clearance add form', async ({ page }) => {
     await loginAsDemoUser(page);
-    await page.goto('/clearance', { waitUntil: 'domcontentloaded' });
+    await clientNavigate(page, '/clearance');
     await expect(page).toHaveURL(/\/clearance\/add/, { timeout: 20000 });
   });
 
@@ -53,7 +53,7 @@ test.describe('Navigation and cross route structure', () => {
     ];
 
     for (const item of cases) {
-      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await clientNavigate(page, '/');
       await page.getByRole('button', { name: item.name }).first().click();
       await expect(page).toHaveURL(item.url, { timeout: 20000 });
     }
