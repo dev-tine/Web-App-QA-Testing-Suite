@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from './pages/LoginPage.js';
 import { AppPage } from './pages/AppPage.js';
-import { loginAsDemoUser, hasCredentials, CREDENTIALS_MISSING } from './helpers/auth-helper.js';
+import { loginAsDemoUser, hasCredentials, SUITE_DISABLED } from './helpers/auth-helper.js';
 
 /**
  * Evidence capture.
@@ -12,12 +12,17 @@ import { loginAsDemoUser, hasCredentials, CREDENTIALS_MISSING } from './helpers/
  * repository is regenerated from the live application rather than pasted in by
  * hand and left to go stale.
  *
- * Each viewport captures its own set of files, so the two projects never
- * overwrite each other. Naming follows the convention in
- * manual-testing/screenshots/README.md.
+ * Each group is pinned to one project, so the desktop and mobile runs never
+ * overwrite each other's files. A suite takes exactly one skip modifier, so
+ * the project check and the credentials check are combined into one condition
+ * per group rather than stacked.
+ *
+ * Naming follows the convention in manual-testing/screenshots/README.md.
  */
 
 const DIR = '../manual-testing/screenshots/';
+const DESKTOP = 'chromium-desktop';
+const MOBILE = 'mobile-chrome';
 
 const shot = async (page, name) => {
   await page.waitForTimeout(1200);
@@ -25,7 +30,7 @@ const shot = async (page, name) => {
 };
 
 test.describe('Evidence capture, desktop, unauthenticated', () => {
-  test.skip(({ browserName }, testInfo) => testInfo.project.name !== 'chromium-desktop',
+  test.skip(({}, testInfo) => testInfo.project.name !== DESKTOP,
     'Desktop evidence is captured once, from the desktop project');
 
   test('EV-001 login page, default state', async ({ page }) => {
@@ -52,9 +57,8 @@ test.describe('Evidence capture, desktop, unauthenticated', () => {
 });
 
 test.describe('Evidence capture, desktop, authenticated', () => {
-  test.skip(({ browserName }, testInfo) => testInfo.project.name !== 'chromium-desktop',
-    'Desktop evidence is captured once, from the desktop project');
-  test.skip(!hasCredentials, CREDENTIALS_MISSING);
+  test.skip(({}, testInfo) => testInfo.project.name !== DESKTOP || !hasCredentials,
+    'Captured once from the desktop project, and only with credentials. ' + SUITE_DISABLED);
 
   test('EV-004 officer home', async ({ page }) => {
     await loginAsDemoUser(page);
@@ -107,7 +111,7 @@ test.describe('Evidence capture, desktop, authenticated', () => {
 });
 
 test.describe('Evidence capture, mobile', () => {
-  test.skip(({ browserName }, testInfo) => testInfo.project.name !== 'mobile-chrome',
+  test.skip(({}, testInfo) => testInfo.project.name !== MOBILE,
     'Mobile evidence is captured once, from the mobile project');
 
   test('EV-011 login page at a mobile viewport', async ({ page }) => {
@@ -118,7 +122,7 @@ test.describe('Evidence capture, mobile', () => {
   });
 
   test('EV-012 new payment form at a mobile viewport', async ({ page }) => {
-    test.skip(!hasCredentials, CREDENTIALS_MISSING);
+    test.skip(!hasCredentials, SUITE_DISABLED);
     await loginAsDemoUser(page);
     await new AppPage(page).goto('/payments/add');
     await shot(page, 'aviihai-EV-012-payments-add-mobile.png');
