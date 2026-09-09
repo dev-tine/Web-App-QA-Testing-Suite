@@ -147,6 +147,35 @@ success criterion it breaches. See [`docs/DEFECT-LOG.md`](./docs/DEFECT-LOG.md).
 
 ---
 
+---
+
+## Evidence
+
+Captured by `evidence.spec.js` against the live application and committed back
+to the repository by CI on every push to `main`. Nothing here is pasted in by
+hand, so nothing here can quietly go stale.
+
+| Login, default state | Login, native validation | Login, rejected credentials |
+|---|---|---|
+| ![Login page](./manual-testing/screenshots/aviihai-EV-001-login-default.png) | ![Empty submit validation](./manual-testing/screenshots/aviihai-EV-002-login-validation.png) | ![Rejected credentials](./manual-testing/screenshots/aviihai-EV-003-login-rejected.png) |
+
+| Officer home | New payment form | Payment records |
+|---|---|---|
+| ![Officer home](./manual-testing/screenshots/aviihai-EV-004-officer-home.png) | ![New payment](./manual-testing/screenshots/aviihai-EV-005-payments-add.png) | ![Payment records](./manual-testing/screenshots/aviihai-EV-007-payments-records.png) |
+
+| New clearance form | Clearance history | Settings, officer roster |
+|---|---|---|
+| ![New clearance](./manual-testing/screenshots/aviihai-EV-008-clearance-add.png) | ![Clearance history](./manual-testing/screenshots/aviihai-EV-009-clearance-records.png) | ![Settings](./manual-testing/screenshots/aviihai-EV-010-settings.png) |
+
+Mobile viewport, Pixel 7:
+
+| Login | New payment form |
+|---|---|
+| ![Login on mobile](./manual-testing/screenshots/aviihai-EV-011-login-mobile.png) | ![New payment on mobile](./manual-testing/screenshots/aviihai-EV-012-payments-add-mobile.png) |
+
+The full set, including the naming convention, is in
+[`manual-testing/screenshots/`](./manual-testing/screenshots/).
+
 ## Running the suite
 
 ```bash
