@@ -1,12 +1,27 @@
+import { clientNavigate, openApp } from '../helpers/auth-helper.js';
+
 /**
  * Page object for the authenticated area of the AVIIHAI application.
  *
- * The application ships no data-testid, id or name attributes (DEF-104), and
- * its visible field labels are not programmatically associated with their
- * controls (DEF-106). Selectors therefore rely on role, heading level and
- * placeholder text, which are the most stable hooks available today. Replace
- * them with data-testid selectors once the application exposes them.
+ * Two constraints shape every selector and every navigation here.
+ *
+ * DEF-104. The application ships no data-testid, id or name attributes, and
+ * DEF-106 means its visible labels are not associated with their controls.
+ * Selectors therefore rely on role, heading level and placeholder text, which
+ * are the most stable hooks available today.
+ *
+ * DEF-111. The deployment serves no single page application fallback, so a
+ * direct request to a sub route returns a 404 page. goto() therefore enters at
+ * the root and moves inside the running application, preferring the real user
+ * path through the interface and falling back to the History API.
  */
+
+const CARD_FOR_ROUTE = {
+  '/payments': /payments/i,
+  '/clearance': /business clearance/i,
+  '/settings': /settings/i,
+};
+
 export class AppPage {
   constructor(page) {
     this.page = page;
@@ -16,9 +31,36 @@ export class AppPage {
     this.historyTab = page.getByRole('button', { name: /^history$/i });
   }
 
+  /** Route inside the loaded application, then wait for the view to settle. */
   async goto(path) {
-    await this.page.goto(path, { waitUntil: 'domcontentloaded' });
+    if (path === '/') {
+      await clientNavigate(this.page, '/');
+    } else {
+      const moduleRoot = Object.keys(CARD_FOR_ROUTE).find((key) => path.startsWith(key));
+      const card = moduleRoot ? CARD_FOR_ROUTE[moduleRoot] : null;
+      let navigated = false;
+
+      if (card) {
+        try {
+          await clientNavigate(this.page, '/');
+          await this.page.getByRole('button', { name: card }).first().click({ timeout: 8000 });
+          navigated = true;
+        } catch (error) {
+          navigated = false;
+        }
+      }
+
+      if (!navigated || !this.page.url().endsWith(path)) {
+        await clientNavigate(this.page, path);
+      }
+    }
+
     await this.h1.waitFor({ state: 'visible', timeout: 20000 });
+  }
+
+  /** Reloads the application from the root. */
+  async restart() {
+    await openApp(this.page);
   }
 
   /**
