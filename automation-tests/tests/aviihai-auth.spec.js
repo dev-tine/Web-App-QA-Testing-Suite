@@ -1,36 +1,43 @@
 import { test, expect } from '@playwright/test';
-import { loginAsDemoUser, hasCredentials, CREDENTIALS_MISSING } from './helpers/auth-helper.js';
+import {
+  loginAsDemoUser,
+  openApp,
+  clientNavigate,
+  hasCredentials,
+  SUITE_DISABLED,
+} from './helpers/auth-helper.js';
 
 /**
- * Authentication.
+ * Authentication and access control.
  *
- * The unauthenticated cases run everywhere, including on forks and on pull
+ * The unauthenticated cases run everywhere, including on forks and pull
  * requests where secrets are not exposed. The authenticated cases skip with a
  * readable reason when credentials are absent, so a missing secret produces a
  * skip rather than a false failure.
  *
- * Base URL comes from playwright.config.js. Every navigation here is relative,
- * so the same suite runs against a staging build by setting BASE_URL.
+ * Entry is always at the site root. A direct request to any sub route returns
+ * the deployment's 404 page, which is DEF-111 and has its own case below.
  */
 
 test.describe('Authentication, unauthenticated', () => {
-  test('TC-AUTH-001 the login page loads and renders every control', async ({ page }) => {
-    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+  test('TC-AUTH-001 the application loads and renders the sign in form', async ({ page }) => {
+    await openApp(page);
 
-    await expect(page).toHaveURL(/\/login/);
+    await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
     await expect(page.getByText(/officer login/i)).toBeVisible();
     await expect(page.locator('input[type="email"]')).toBeVisible();
     await expect(page.locator('input[type="password"]')).toBeVisible();
     await expect(page.getByRole('button', { name: /log in/i })).toBeVisible();
   });
 
-  test('TC-AUTH-002 the root path sends an unauthenticated visitor to login', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+  test('TC-AUTH-002 the root path sends an unauthenticated visitor to the login view', async ({ page }) => {
+    await openApp(page);
     await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
   });
 
-  test('TC-AUTH-003 rejected credentials keep the user on the login page', async ({ page }) => {
-    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+  test('TC-AUTH-003 rejected credentials keep the user on the login view', async ({ page }) => {
+    await openApp(page);
+    await page.locator('input[type="email"]').waitFor({ state: 'visible', timeout: 20000 });
 
     await page.locator('input[type="email"]').fill('nobody@example.com');
     await page.locator('input[type="password"]').fill('not-a-real-password');
@@ -41,18 +48,37 @@ test.describe('Authentication, unauthenticated', () => {
     await expect(page.getByRole('button', { name: /log in/i })).toBeVisible();
   });
 
-  test('TC-AUTH-004 protected routes are not reachable without a session', async ({ page }) => {
-    const protectedRoutes = ['/payments/add', '/payments/records', '/clearance/add', '/settings'];
+  test('TC-AUTH-004 a protected route is not shown to a visitor without a session', async ({ page }) => {
+    await openApp(page);
+    await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
 
-    for (const route of protectedRoutes) {
-      await page.goto(route, { waitUntil: 'domcontentloaded' });
-      await expect(page, 'access control on ' + route).toHaveURL(/\/login/, { timeout: 20000 });
+    for (const route of ['/payments/add', '/clearance/add', '/settings']) {
+      await clientNavigate(page, route);
+      await expect(
+        page.getByText(/officer login/i),
+        'access control on ' + route
+      ).toBeVisible({ timeout: 10000 });
     }
+  });
+
+  /**
+   * DEF-111, Major.
+   * The deployment serves no single page application fallback. Any request for
+   * a route other than the site root is answered with the hosting provider's
+   * 404 page, so every bookmark, shared link and browser refresh on a sub route
+   * fails. It is invisible while clicking through the app, which is exactly why
+   * it survived to production.
+   */
+  test.fail('TC-AUTH-009 a deep link resolves to the application, DEF-111', async ({ page }) => {
+    const response = await page.goto('/settings', { waitUntil: 'domcontentloaded' });
+
+    expect(response.status(), 'HTTP status for a direct sub route request').toBeLessThan(400);
+    expect(await page.title(), 'document title').not.toMatch(/404/i);
   });
 });
 
 test.describe('Authentication, authenticated', () => {
-  test.skip(!hasCredentials, CREDENTIALS_MISSING);
+  test.skip(!hasCredentials, SUITE_DISABLED);
 
   test('TC-AUTH-005 a valid demo account reaches the officer home', async ({ page }) => {
     await loginAsDemoUser(page);
@@ -64,7 +90,7 @@ test.describe('Authentication, authenticated', () => {
     await expect(page.getByRole('button', { name: /settings/i })).toBeVisible();
   });
 
-  test('TC-AUTH-006 the session survives a page reload', async ({ page }) => {
+  test('TC-AUTH-006 the session survives a reload of the application', async ({ page }) => {
     await loginAsDemoUser(page);
 
     await page.reload({ waitUntil: 'domcontentloaded' });
@@ -73,7 +99,7 @@ test.describe('Authentication, authenticated', () => {
     await expect(page.getByRole('heading', { name: /hello, officer/i })).toBeVisible();
   });
 
-  test('TC-AUTH-007 signing out returns the user to the login page', async ({ page }) => {
+  test('TC-AUTH-007 signing out returns the user to the login view', async ({ page }) => {
     await loginAsDemoUser(page);
 
     const signOut = page.locator('button:has(svg.lucide-log-out)');
@@ -84,13 +110,13 @@ test.describe('Authentication, authenticated', () => {
     await expect(page.getByText(/officer login/i)).toBeVisible();
   });
 
-  test('TC-AUTH-008 a protected route is not reachable again after signing out', async ({ page }) => {
+  test('TC-AUTH-008 a protected route is not shown again after signing out', async ({ page }) => {
     await loginAsDemoUser(page);
 
     await page.locator('button:has(svg.lucide-log-out)').click();
     await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
 
-    await page.goto('/settings', { waitUntil: 'domcontentloaded' });
-    await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
+    await clientNavigate(page, '/settings');
+    await expect(page.getByText(/officer login/i)).toBeVisible({ timeout: 10000 });
   });
 });
