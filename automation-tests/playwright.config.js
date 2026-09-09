@@ -6,18 +6,28 @@ import 'dotenv/config';
  *
  * Credentials are never committed. Set DEMO_EMAIL and DEMO_PASSWORD in a local
  * .env file, or as repository secrets when the suite runs in CI.
+ *
+ * Parallelism note. The suite is read only by design, documented in
+ * docs/TEST-PLAN.md: no spec submits a form or writes a record. Because
+ * nothing mutates shared state, the specs are safe to run in parallel, and
+ * doing so keeps a full cross viewport run inside the CI budget. Restore
+ * workers to 1 the day a write path is automated.
  */
 export default defineConfig({
   testDir: './tests',
   outputDir: './test-results',
+  globalSetup: './global-setup.js',
 
-  timeout: 60000,
-  expect: { timeout: 10000 },
+  timeout: 45000,
+  expect: { timeout: 8000 },
 
-  fullyParallel: false,
-  workers: 1,
+  fullyParallel: true,
+  workers: process.env.CI ? 4 : 2,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+
+  // No retries. Known defects are marked with test.fail() rather than left to
+  // flap, so a retry would only triple the cost of a genuine failure.
+  retries: 0,
 
   reporter: process.env.CI
     ? [['list'], ['html', { open: 'never' }], ['github']]
@@ -28,8 +38,8 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    actionTimeout: 15000,
-    navigationTimeout: 30000,
+    actionTimeout: 12000,
+    navigationTimeout: 25000,
   },
 
   projects: [
