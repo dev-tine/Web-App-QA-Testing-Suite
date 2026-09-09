@@ -1,159 +1,207 @@
 # Web App QA Testing Suite
-A professional Quality Assurance portfolio repository showcasing both **manual software testing documentation** and **automated UI testing** using **Playwright and JavaScript**.
 
-This project demonstrates my ability to plan, execute, document, and validate web application testing activities across both manual and automation workflows. It highlights practical experience in test case execution, defect tracking, regression testing, smoke validation, UI verification, and end-to-end quality assurance processes.
+[![Playwright Tests](https://github.com/dev-tine/Web-App-QA-Testing-Suite/actions/workflows/playwright.yml/badge.svg)](https://github.com/dev-tine/Web-App-QA-Testing-Suite/actions/workflows/playwright.yml)
+![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white)
+![WCAG 2.1 AA](https://img.shields.io/badge/WCAG_2.1-AA_spot_checks-1C7C54)
 
-## Project Overview
-This repository is designed as an end-to-end QA portfolio for web application testing. It includes two major areas:
+A QA portfolio built the way a real test effort is built: a written plan, a
+traceability matrix, an executed cycle, a defect log with reproductions, and an
+automated suite that runs on every push and regenerates its own evidence.
 
-1. **Manual Testing & Execution Documentation**
-A structured manual testing workspace containing test execution dashboards, bug tracking documentation, and sample test case records based on real QA internship experience.
-2. **Automated UI Testing with Playwright**
-A JavaScript-based Playwright automation test suite covering browser validation, login flow testing, page navigation, UI locators, assertions, and responsive behavior checks.
-This portfolio reflects my hybrid QA capability in both **manual test execution** and **test automation**, making it suitable for roles such as:
+Two applications are under test, both live:
 
-- QA Tester
-- QA Analyst
-- Software Quality Assurance Intern
-- Junior Automation Tester
-- Manual QA Tester
-- Application Support Analyst
-- Technical Support / QA Support
-- Software Testing Associate
+| Application | What it is | Testing approach |
+|---|---|---|
+| **AVIIHAI HOA Management System** | A homeowners association back office for dues payments and business clearance permits | Automated, Playwright, runs in CI |
+| **ECL Operations Hub** | An internal operations platform for relationships, pipeline and work items | Manual cycle, documented in a formal test report |
 
-## Repository Structure
+---
+
+## Start here
+
+| If you want to see | Open |
+|---|---|
+| How the testing was planned and scoped | [`docs/TEST-PLAN.md`](./docs/TEST-PLAN.md) |
+| Every defect found, with reproduction steps | [`docs/DEFECT-LOG.md`](./docs/DEFECT-LOG.md) |
+| Which case covers which requirement and defect | [`automation-tests/docs/aviihai-coverage-matrix.md`](./automation-tests/docs/aviihai-coverage-matrix.md) |
+| A full manual test cycle, written up | [`manual-testing/case-studies/ecl-operations-hub/`](./manual-testing/case-studies/ecl-operations-hub/) |
+| The automated suite itself | [`automation-tests/tests/`](./automation-tests/tests/) |
+| Screenshots captured from the live application | [`manual-testing/screenshots/`](./manual-testing/screenshots/) |
+
+---
+
+## Repository map
 
 ```
 Web-App-QA-Testing-Suite/
 │
+├── docs/
+│   ├── TEST-PLAN.md                     Scope, approach, entry and exit criteria, risks
+│   └── DEFECT-LOG.md                    Every defect, with steps and standards references
+│
 ├── automation-tests/
-│   └── Playwright automation test scripts
+│   ├── playwright.config.js             Two projects: desktop Chromium and Pixel 7
+│   ├── docs/
+│   │   └── aviihai-coverage-matrix.md   Traceability matrix, case to defect
+│   └── tests/
+│       ├── pages/                       Page objects
+│       ├── helpers/                     Shared authentication helper
+│       ├── aviihai-auth.spec.js         Authentication and access control
+│       ├── aviihai-dashboard.spec.js    Officer home
+│       ├── login.spec.js                Login fields and accessibility
+│       ├── navigation.spec.js           Routing and cross route structure
+│       ├── payments.spec.js             Payments module
+│       ├── clearance.spec.js            Business clearance module
+│       ├── settings.spec.js             Settings module
+│       ├── evidence.spec.js             Screenshot capture for the documentation
+│       └── portfolio-smoke.spec.js      External smoke check
 │
 ├── manual-testing/
-│   ├── Manual QA documentation
-│   └── screenshots/
+│   ├── case-studies/
+│   │   └── ecl-operations-hub/          Manual cycle: report, findings, retraction note
+│   └── screenshots/                     Evidence, regenerated by CI on every push
 │
-├── README.md
-└── .gitignore
+└── .github/workflows/playwright.yml     CI: run the suite, publish the report, commit evidence
 ```
 
-## Tools & Technologies Used
+---
 
-- **Playwright** – Automated UI testing framework
-- **JavaScript** – Test scripting language
-- **Node.js** – Runtime environment for automation tests
-- **Excel / Google Sheets** – Manual test case tracking and execution dashboard
-- **Defect Tracking** – Bug reporting, issue documentation, retesting, and validation
-- **QA Methodologies** – Smoke Testing, Regression Testing, Functional Testing, UI Testing, and Test Case Execution
-- **Visual Studio Code** – Development environment
-- **Git & GitHub** – Version control and portfolio deployment
-- **GitHub Copilot / AI Assistance** – Used as a productivity tool for learning, code review, and test improvement
+## Three things this repository is trying to show
 
-## Manual Testing & Execution Dashboard
-The `manual-testing` folder is intended to showcase my manual QA documentation, including test planning, test case execution, defect tracking, and QA reporting.
+### 1. Automation that does not damage what it tests
 
-My manual testing documentation includes:
+The AVIIHAI suite runs against a live demo database on every push. No spec
+submits a form.
 
-- 600+ executed test cases
-- Execution dashboard
-- Passed, failed, blocked, and pending test status tracking
-- Defect summary and bug reports
-- Retesting and validation notes
-- Functional and UI testing coverage
-- Organized QA documentation based on internship-level testing workflows
+Required field behaviour is still verified, through the Constraint Validation
+API rather than a submit attempt: the suite reads `form.checkValidity()` and
+each control's `validity.valueMissing`, which is exactly what the browser
+consults before allowing a submit. Same assertion, nothing written.
 
-### Manual Testing Screenshots
-Dashboard Screenshot:
+The limit is stated rather than hidden. This proves the browser blocks an
+invalid submit. It does not prove the server rejects one. Server side
+validation is the first thing a seeded staging environment would unlock, and it
+is listed as such in the plan.
 
-![Dashboard Screenshot](https://chatgpt.com/g/g-p-6a351fe81c548191a7416efbf2c6918a-playwright/c/manual-testing/screenshots/dashboard-screenshot.png)
+### 2. Known defects that keep the build green and still report the fix
 
-Sample Bug Report Screenshot:
+A defect that has been found, reproduced and written up should not keep failing
+the pipeline as if it were news. Cases asserting the correct behaviour of an
+open defect are annotated `test.fail()`, so:
 
-![Sample Bug Report](https://chatgpt.com/g/g-p-6a351fe81c548191a7416efbf2c6918a-playwright/c/manual-testing/screenshots/sample-bug-report.png)
+- the build stays green while the defect is open, and
+- the moment someone fixes it the case starts passing and Playwright flags an
+  unexpected pass.
 
-Sample Test Case Execution Screenshot:
+The suite tells the team when a bug is fixed, instead of relying on somebody
+remembering to re enable a test.
 
-![Sample Test Case Execution](https://chatgpt.com/g/g-p-6a351fe81c548191a7416efbf2c6918a-playwright/c/manual-testing/screenshots/test-case-execution-sample.png)
+### 3. A finding that was retracted, kept in the record
 
-## Automated UI Testing
-The `automation-tests` folder contains my Playwright automation practice project. These scripts demonstrate my ability to automate browser-based validation for web applications.
+A rendering defect was raised as Critical during the ECL cycle, then did not
+reproduce. The root cause was in the test environment, not the product: the
+session was driving a background browser tab, where the browser throttles the
+timers the render path depends on.
 
-Automation coverage includes:
+It was closed as not a defect and kept in the report with the reasoning
+attached. A finding that does not reproduce under normal conditions is not a
+finding, and the decision to close one belongs in the record. Full write up in
+the [ECL case study](./manual-testing/case-studies/ecl-operations-hub/).
 
-- Smoke validation
-- Login page validation
-- Protected route checking
-- Navigation testing
-- UI locator strategies
-- Assertions and expected results
-- Cross-browser test execution
-- Responsive viewport checks
-- Error handling and validation testing
-- Regression-ready test structure
-The automation suite was created using JavaScript and Playwright, with test scripts structured to validate common web application behavior.
+---
 
-## Automation Testing Skills Demonstrated
-This repository demonstrates practical experience with:
+## Coverage at a glance
 
-- Writing automated UI test scripts
-- Using Playwright test runner
-- Creating assertions with expected results
-- Working with page locators
-- Handling navigation and redirects
-- Structuring test files for maintainability
-- Running tests across browsers
-- Debugging failed automation tests
-- Understanding the relationship between manual QA and automation QA
+| Area | Cases | Notes |
+|---|---|---|
+| Authentication and access control | 8 | Including access to protected routes after sign out |
+| Login page, field level and accessibility | 18 | WCAG 2.1 AA spot checks mapped to success criteria |
+| Officer home | 5 | |
+| Navigation and cross route structure | 10 | Title uniqueness, landmarks, accessible names |
+| Payments | 11 | Form, reference data, records, filter, search, empty state |
+| Business clearance | 11 | Form, three reference lists, history, empty state |
+| Settings | 7 | Officer roster, directors, contacts |
+| Evidence capture | 12 | Desktop and mobile viewports |
 
-## Manual QA Skills Demonstrated
-This repository also highlights manual QA experience such as:
+Ten defects are open against the AVIIHAI build, three Major and seven Minor. Each
+one has reproduction steps and, where it applies, the WCAG success criterion it
+breaches. See [`docs/DEFECT-LOG.md`](./docs/DEFECT-LOG.md).
 
-- Test case preparation
-- Test case execution
-- Bug reporting
-- Defect tracking
-- Retesting
-- Regression testing
-- Smoke testing
-- UI and functional validation
-- QA documentation
-- Execution dashboard monitoring
-- Test status reporting
+---
 
-## How to Run the Automation Tests
-Navigate to the automation folder:
+## Running the suite
 
-```
+```bash
 cd automation-tests
-```
-Install dependencies:
-
-```
-npm install
-```
-Run Playwright tests:
-
-```
-npx playwright test
-```
-Run tests in headed mode:
-
-```
-npx playwright test --headed
-```
-View the Playwright HTML report:
-
-```
-npx playwright show-report
+npm ci
+npx playwright install --with-deps chromium
 ```
 
-## Portfolio Purpose
-This repository was created to serve as a professional QA portfolio for job applications. It combines both manual and automation testing evidence to show end-to-end QA capability.
+Create `automation-tests/.env`:
 
-It is intended to support applications for entry-level and junior roles in software testing, QA analysis, application support, and technical operations.
+```
+DEMO_EMAIL=your-demo-account@example.com
+DEMO_PASSWORD=your-demo-password
+```
 
-## Connect with Me
+The file is gitignored. Credentials are never committed, and the authenticated
+specs skip with a readable reason when they are absent, so a missing secret
+produces a skip rather than a false failure.
 
-- LinkedIn: `https://www.linkedin.com/in/destine-april-fortaliza/`
-- Portfolio Website: `https://www.devtine.xyz/`
-- GitHub: `https://github.com/dev-tine`
+```bash
+npm test               # the full suite
+npm run test:smoke     # the external smoke check only
+npm run test:headed    # watch it run
+npm run test:ui        # Playwright UI mode
+npm run report         # open the last HTML report
+```
+
+Point the suite at another build with `BASE_URL=https://staging.example.com npm test`.
+
+### In CI
+
+The workflow runs on every push to `main`, on pull requests and on demand. It
+needs two repository secrets, `DEMO_EMAIL` and `DEMO_PASSWORD`, under
+**Settings, then Secrets and variables, then Actions**.
+
+Each run publishes the HTML report as an artifact, uploads traces and videos
+for any failure, and commits refreshed evidence screenshots back to
+`manual-testing/screenshots`.
+
+---
+
+## Techniques used
+
+**Automation.** Playwright Test, page object model, shared fixtures, role based
+and accessible name selectors, constraint validation through the DOM, expected
+failure annotations, cross viewport projects, trace and video on failure,
+GitHub Actions with artifact publishing and evidence commit back.
+
+**Test design.** Test planning, scope and exclusion rationale, entry and exit
+criteria, risk register, traceability from case to defect to standard,
+severity classification, deferred scope with named blockers.
+
+**Manual QA.** Test case authoring with preconditions and numbered steps,
+execution tracking, defect reporting with reproductions and evidence, retest
+and closure, WCAG 2.1 AA spot checking, front end timing read from the
+Navigation Timing API rather than a stopwatch.
+
+---
+
+## Background
+
+Manual QA experience from a software QA internship: test case design in
+spreadsheets, execution tracking, and defect reporting and retesting in ClickUp.
+The documentation style in this repository is carried over from that work, with
+the case study, defect log and traceability matrix rebuilt here against
+applications I can publish.
+
+---
+
+## Contact
+
+- LinkedIn: https://www.linkedin.com/in/destine-april-fortaliza/
+- Portfolio: https://www.devtine.xyz/
+- GitHub: https://github.com/dev-tine
