@@ -3,18 +3,22 @@ import { chromium } from '@playwright/test';
 /**
  * Environment preflight.
  *
- * A test suite should tell you when it did not run, and why. Before any spec
- * executes, this opens the login route once and checks that the application
- * actually renders its sign in form.
+ * A suite should tell you when it did not run, and why. Before any spec
+ * executes, this opens the application once and checks that it renders its
+ * sign in form.
  *
- * If it does not, every spec that needs the application skips with a stated
- * reason instead of failing 166 times over forty minutes against an
- * environment that was never up. An environment that is unavailable is not a
- * product defect, and a suite that reports it as one is a suite nobody trusts.
+ * If it does not, the specs that need the application skip with a stated
+ * reason instead of failing many times over against an environment that was
+ * never up. An unavailable environment is not a product defect, and a suite
+ * that reports it as one is a suite nobody trusts.
  *
  * When the check fails it prints what it did find, so the next person does not
- * have to guess: final URL, document title, heading text, how many inputs
- * rendered, and any page error.
+ * have to guess: final route, document title, headings, how many inputs
+ * rendered, and any page error. That output is what identified DEF-111.
+ *
+ * Entry is at the site root, not /login, because a direct request to any sub
+ * route returns the deployment's 404 page. That is DEF-111 itself, and it is
+ * covered by its own test case rather than being papered over here.
  */
 
 const BASE_URL = process.env.BASE_URL || 'https://aviihai.vercel.app';
@@ -33,12 +37,12 @@ export default async function globalSetup() {
   let reachable = false;
 
   try {
-    await page.goto(BASE_URL + '/login', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.locator('input[type="email"]').waitFor({ state: 'visible', timeout: 25000 });
     reachable = true;
   } catch (error) {
     const diagnostics = await page.evaluate(() => ({
-      url: window.location.pathname,
+      route: window.location.pathname,
       title: document.title,
       readyState: document.readyState,
       headings: Array.from(document.querySelectorAll('h1, h2')).map((h) => h.textContent.trim()),
@@ -65,6 +69,5 @@ export default async function globalSetup() {
 
   process.env.APP_REACHABLE = reachable ? '1' : '';
 
-  console.log('Preflight: application ' + (reachable ? 'is reachable' : 'is NOT reachable') +
-    ' at ' + BASE_URL);
+  console.log('Preflight: application ' + (reachable ? 'is reachable' : 'is NOT reachable'));
 }
