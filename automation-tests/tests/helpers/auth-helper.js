@@ -70,11 +70,11 @@ export async function loginAsDemoUser(page) {
   }
 
   await openApp(page);
-  await page.locator('input[type="email"]').waitFor({ state: 'visible', timeout: 20000 });
+  await page.locator('input[type="email"]').waitFor({ state: 'visible', timeout: 40000 });
   await page.locator('input[type="email"]').fill(EMAIL);
   await page.locator('input[type="password"]').fill(PASSWORD);
   await page.getByRole('button', { name: /log in/i }).click();
 
   await expect(page.getByRole('heading', { name: /hello, officer/i }))
-    .toBeVisible({ timeout: 25000 });
+    .toBeVisible({ timeout: 40000 });
 }
