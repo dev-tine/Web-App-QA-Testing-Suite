@@ -30,6 +30,7 @@
 | DEF-108 | Header control has no accessible name | Minor | WCAG 2.1 SC 4.1.2 | Open | TC-NAV-009 |
 | DEF-109 | A clearance can be recorded without an address or capitalization | Minor | Specification question | Open, awaiting decision | TC-CLR-007 |
 | DEF-110 | Two list modules describe an empty result two different ways | Minor | Consistency | Open | TC-CLR-011 |
+| DEF-111 | Every deep link and page refresh returns a 404 | Critical | Availability | Open | TC-AUTH-009 |
 
 ---
 
@@ -201,6 +202,51 @@ not, and only one ends in a full stop.
 at which a user starts wondering whether the screen is broken or simply empty.
 
 ---
+
+---
+
+## DEF-111, Critical
+
+**Title.** Every deep link and page refresh returns a 404.
+
+**Severity.** Critical.
+**Type.** Availability and deployment configuration.
+
+**Steps to reproduce.**
+
+1. Open a new browser tab.
+2. Paste the address of any route other than the site root, for example the settings route.
+3. Press Enter.
+4. Alternatively, sign in, navigate to any module, and press the browser refresh button.
+
+**Expected result.** The application loads and shows the requested view, or
+the login view when there is no session.
+
+**Actual result.** The hosting provider answers with its own 404 page. The
+document title is "404: NOT_FOUND" and the application never boots. Zero
+inputs, zero headings and zero buttons render.
+
+**Impact.** Bookmarks do not work. Links shared between officers do not work.
+Pressing refresh on any screen but the first throws the user out of the
+application entirely and shows an error page with no way back. For an
+application used to record payments, losing the screen on a refresh means
+losing whatever was being typed.
+
+**Why it survived to production.** It is invisible to anyone clicking through
+the application, because in-app navigation is handled by the router and never
+requests a new document. It only appears on a fresh request, which is exactly
+what a bookmark, a shared link and a refresh all are.
+
+**Found by.** The automated preflight, not by a person reading the screen. The
+suite reported the document title it actually received rather than only that a
+locator was missing, and the title named the cause.
+
+**Fix.** Add a rewrite that serves index.html for all unmatched paths. On
+Vercel that is a `vercel.json` with a rewrite from `/(.*)` to `/`.
+
+**Workaround in the suite.** Every spec enters at the site root and moves
+between routes inside the running application. That workaround is temporary and
+should be removed once the rewrite is deployed.
 
 ## Note on a finding that was retracted
 
