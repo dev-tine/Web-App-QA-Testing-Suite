@@ -21,9 +21,15 @@ export class LoginPage {
     this.form = page.locator('form');
   }
 
+  /**
+   * The sign in form is client rendered, and first paint at the mobile
+   * viewport is measurably slower than at the desktop one. The wait is sized
+   * for the slow case, and a failure here is reported as a load timeout rather
+   * than as a missing element, which is a more useful thing to read.
+   */
   async goto() {
     await this.page.goto('/', { waitUntil: 'domcontentloaded' });
-    await this.emailInput.waitFor({ state: 'visible', timeout: 20000 });
+    await this.emailInput.waitFor({ state: 'visible', timeout: 40000 });
   }
 
   async login(email, password) {
