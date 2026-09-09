@@ -1,10 +1,15 @@
 /**
  * Page object for the AVIIHAI officer login screen.
  *
- * The application ships no data-testid, id or name attributes on its form
- * controls, recorded as DEF-104. Selectors therefore rely on input type and on
- * the accessible role of the submit control, which are the most stable hooks
- * available today. Swap these for data-testid selectors once the app adds them.
+ * DEF-104. The application ships no data-testid, id or name attributes on its
+ * form controls. Selectors therefore rely on input type and on the accessible
+ * role of the submit control, which are the most stable hooks available today.
+ * Swap these for data-testid selectors once the app adds them.
+ *
+ * DEF-111. A direct request to /login returns the deployment's 404 page,
+ * because no single page application fallback is configured. The suite enters
+ * at the site root instead, which the router then resolves to the login view
+ * for an unauthenticated visitor.
  */
 export class LoginPage {
   constructor(page) {
@@ -17,8 +22,8 @@ export class LoginPage {
   }
 
   async goto() {
-    await this.page.goto('/login', { waitUntil: 'domcontentloaded' });
-    await this.emailInput.waitFor({ state: 'visible' });
+    await this.page.goto('/', { waitUntil: 'domcontentloaded' });
+    await this.emailInput.waitFor({ state: 'visible', timeout: 20000 });
   }
 
   async login(email, password) {
