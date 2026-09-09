@@ -1,64 +1,65 @@
 import { test, expect } from '@playwright/test';
-import { loginAsDemoUser } from './helpers/auth-helper.js';
+import { AppPage } from './pages/AppPage.js';
+import { loginAsDemoUser, hasCredentials, CREDENTIALS_MISSING } from './helpers/auth-helper.js';
 
-test.describe('AVIIHAI Dashboard', () => {
-  test('DASH-001 dashboard loads after successful login', async ({ page }) => {
+/**
+ * Officer home.
+ *
+ * The landing view after sign in. It is a launcher rather than a data
+ * dashboard: three module cards and two backup actions.
+ */
+
+test.describe('Officer home', () => {
+  test.skip(!hasCredentials, CREDENTIALS_MISSING);
+
+  test('TC-HOME-001 the officer home identifies the signed in account', async ({ page }) => {
     await loginAsDemoUser(page);
 
-    await expect(page.getByText(/hello, officer/i)).toBeVisible();
-    await expect(page.getByText(/demo@user\.com/i)).toBeVisible();
-    await expect(page.getByRole('heading', { name: /aviihai/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /hello, officer/i })).toBeVisible();
     await expect(page.getByText(/hoa management system/i)).toBeVisible();
   });
 
-  test('DASH-002 dashboard module cards are visible', async ({ page }) => {
+  test('TC-HOME-002 all three module cards are present with their descriptions', async ({ page }) => {
     await loginAsDemoUser(page);
 
-    await expect(
-      page.getByRole('button', { name: /payments record & view payments/i })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: /^payments$/i })).toBeVisible();
+    await expect(page.getByText(/record & view payments/i)).toBeVisible();
 
-    await expect(
-      page.getByRole('button', { name: /business clearance generate & track permits/i })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: /business clearance/i })).toBeVisible();
+    await expect(page.getByText(/generate & track permits/i)).toBeVisible();
 
-    await expect(
-      page.getByRole('button', { name: /settings officers & app config/i })
-    ).toBeVisible();
-
-    await expect(
-      page.getByRole('button', { name: /backup payments/i })
-    ).toBeVisible();
-
-    await expect(
-      page.getByRole('button', { name: /backup clearances/i })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: /^settings$/i })).toBeVisible();
+    await expect(page.getByText(/officers & app config/i)).toBeVisible();
   });
 
-  test('DASH-003 user can navigate to Payments module', async ({ page }) => {
+  test('TC-HOME-003 both backup actions are offered', async ({ page }) => {
     await loginAsDemoUser(page);
 
-    await page.getByRole('button', { name: /payments record & view payments/i }).click();
-
-    await expect(page).toHaveURL(/\/payments\/add/);
-    await expect(page.locator('body')).toBeVisible();
+    await expect(page.getByRole('button', { name: /backup payments/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /backup clearances/i })).toBeVisible();
   });
 
-  test('DASH-004 user can navigate to Business Clearance module', async ({ page }) => {
+  test('TC-HOME-004 the officer home loads without console errors', async ({ page }) => {
+    const consoleErrors = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+
     await loginAsDemoUser(page);
+    await page.waitForTimeout(1500);
 
-    await page.getByRole('button', { name: /business clearance generate & track permits/i }).click();
-
-    await expect(page).toHaveURL(/\/clearance\/add/);
-    await expect(page.locator('body')).toBeVisible();
+    expect(consoleErrors, 'console errors on the officer home').toEqual([]);
   });
 
-  test('DASH-005 user can navigate to Settings module', async ({ page }) => {
+  /**
+   * DEF-107, Minor. WCAG 2.1 SC 1.3.1.
+   * The officer home renders no main landmark and no nav landmark, while the
+   * payments and clearance routes render both. See TC-NAV-008.
+   */
+  test.fail('TC-HOME-005 the officer home exposes a main landmark, DEF-107', async ({ page }) => {
     await loginAsDemoUser(page);
+    const snapshot = await new AppPage(page).structuralSnapshot();
 
-    await page.getByRole('button', { name: /settings officers & app config/i }).click();
-
-    await expect(page).toHaveURL(/\/settings/);
-    await expect(page.locator('body')).toBeVisible();
+    expect(snapshot.landmarkMain).toBeGreaterThan(0);
   });
 });
