@@ -16,10 +16,19 @@ import { clientNavigate, openApp } from '../helpers/auth-helper.js';
  * path through the interface and falling back to the History API.
  */
 
+/**
+ * Cards are matched on their description text, not their title.
+ *
+ * The officer home also carries BACKUP PAYMENTS and BACKUP CLEARANCES buttons,
+ * and a title based match on /payments/i selects one of those instead of the
+ * module card. Those two controls write a file, so a suite that is supposed to
+ * be read only must never click them by accident. The descriptions are unique
+ * to the module cards.
+ */
 const CARD_FOR_ROUTE = {
-  '/payments': /payments/i,
-  '/clearance': /business clearance/i,
-  '/settings': /settings/i,
+  '/payments': /record & view payments/i,
+  '/clearance': /generate & track permits/i,
+  '/settings': /officers & app config/i,
 };
 
 export class AppPage {
