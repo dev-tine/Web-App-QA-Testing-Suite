@@ -46,10 +46,12 @@ test.describe('Navigation and cross route structure', () => {
   test('TC-NAV-003 the module cards on the officer home route to the right modules', async ({ page }) => {
     await loginAsDemoUser(page);
 
+    // Matched on the card description, not the title. A title based match on
+    // /payments/i also selects the BACKUP PAYMENTS control, which writes a file.
     const cases = [
-      { name: /payments/i, url: /\/payments\/add/ },
-      { name: /business clearance/i, url: /\/clearance\/add/ },
-      { name: /settings/i, url: /\/settings/ },
+      { name: /record & view payments/i, url: /\/payments\/add/ },
+      { name: /generate & track permits/i, url: /\/clearance\/add/ },
+      { name: /officers & app config/i, url: /\/settings/ },
     ];
 
     for (const item of cases) {
