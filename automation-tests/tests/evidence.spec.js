@@ -13,9 +13,13 @@ import { loginAsDemoUser, hasCredentials, SUITE_DISABLED } from './helpers/auth-
  * hand and left to go stale.
  *
  * Each group is pinned to one project, so the desktop and mobile runs never
- * overwrite each other's files. A suite takes exactly one skip modifier, so
- * the project check and the credentials check are combined into one condition
- * per group rather than stacked.
+ * overwrite each other's files.
+ *
+ * The pinning is done in a beforeEach hook rather than with a suite level
+ * test.skip callback. A suite level callback is given the test fixtures only,
+ * so its second parameter is undefined and reading project information off it
+ * throws before the test body runs. A beforeEach hook does receive testInfo,
+ * which is where the project name lives.
  *
  * Naming follows the convention in manual-testing/screenshots/README.md.
  */
@@ -30,8 +34,10 @@ const shot = async (page, name) => {
 };
 
 test.describe('Evidence capture, desktop, unauthenticated', () => {
-  test.skip(({}, testInfo) => testInfo.project.name !== DESKTOP,
-    'Desktop evidence is captured once, from the desktop project');
+  test.beforeEach(async ({}, testInfo) => {
+    test.skip(testInfo.project.name !== DESKTOP,
+      'Desktop evidence is captured once, from the desktop project');
+  });
 
   test('EV-001 login page, default state', async ({ page }) => {
     await new LoginPage(page).goto();
@@ -57,8 +63,11 @@ test.describe('Evidence capture, desktop, unauthenticated', () => {
 });
 
 test.describe('Evidence capture, desktop, authenticated', () => {
-  test.skip(({}, testInfo) => testInfo.project.name !== DESKTOP || !hasCredentials,
-    'Captured once from the desktop project, and only with credentials. ' + SUITE_DISABLED);
+  test.beforeEach(async ({}, testInfo) => {
+    test.skip(testInfo.project.name !== DESKTOP,
+      'Desktop evidence is captured once, from the desktop project');
+    test.skip(!hasCredentials, SUITE_DISABLED);
+  });
 
   test('EV-004 officer home', async ({ page }) => {
     await loginAsDemoUser(page);
@@ -111,8 +120,10 @@ test.describe('Evidence capture, desktop, authenticated', () => {
 });
 
 test.describe('Evidence capture, mobile', () => {
-  test.skip(({}, testInfo) => testInfo.project.name !== MOBILE,
-    'Mobile evidence is captured once, from the mobile project');
+  test.beforeEach(async ({}, testInfo) => {
+    test.skip(testInfo.project.name !== MOBILE,
+      'Mobile evidence is captured once, from the mobile project');
+  });
 
   test('EV-011 login page at a mobile viewport', async ({ page }) => {
     const login = new LoginPage(page);
