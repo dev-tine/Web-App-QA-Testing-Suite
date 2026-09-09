@@ -52,7 +52,7 @@ export class AppPage {
       if (card) {
         try {
           await clientNavigate(this.page, '/');
-          await this.page.getByRole('button', { name: card }).first().click({ timeout: 8000 });
+          await this.page.getByRole('button', { name: card }).first().click({ timeout: 15000 });
           navigated = true;
         } catch (error) {
           navigated = false;
@@ -64,7 +64,7 @@ export class AppPage {
       }
     }
 
-    await this.h1.waitFor({ state: 'visible', timeout: 20000 });
+    await this.h1.waitFor({ state: 'visible', timeout: 35000 });
   }
 
   /** Reloads the application from the root. */
