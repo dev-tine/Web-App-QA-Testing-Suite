@@ -40,8 +40,16 @@ test.describe('Payments, new payment form', () => {
     const app = new AppPage(page);
     await app.goto('/payments/add');
 
-    await expect(page.getByPlaceholder('0.00')).toHaveAttribute('type', 'number');
-    await expect(page.getByPlaceholder('Enter name')).toHaveAttribute('type', 'text');
+    // Read from the DOM rather than asserting on a locator attribute. The two
+    // controls are siblings with similar placeholders, and reporting the whole
+    // control list on failure says which field was actually wrong.
+    const report = await app.constraintValidationReport();
+    const types = Object.fromEntries(report.controls.map((c) => [c.placeholder, c.type]));
+
+    expect(types, 'control types on the payment form').toMatchObject({
+      '0.00': 'number',
+      'Enter name': 'text',
+    });
   });
 
   test('TC-PAY-003 the street list offers the six subdivision streets', async ({ page }) => {
@@ -61,11 +69,24 @@ test.describe('Payments, new payment form', () => {
     await app.goto('/payments/add');
 
     const report = await app.constraintValidationReport();
-    const byPlaceholder = (text) => report.controls.find((c) => c.placeholder === text);
+    const required = Object.fromEntries(
+      report.controls.map((c) => [c.placeholder, c.required])
+    );
 
-    expect(byPlaceholder('Enter name').required, 'payer name required').toBe(true);
-    expect(byPlaceholder('0.00').required, 'amount required').toBe(true);
-    expect(byPlaceholder('Optional notes').required, 'notes optional').toBe(false);
+    expect(required, 'required flags on the payment form').toMatchObject({
+      'Enter name': true,
+      '0.00': true,
+    });
+
+    // The notes control is optional. It is asserted separately because it is a
+    // textarea, and a textarea is not always inside the same form element.
+    const notes = report.controls.find((c) => /notes/i.test(c.placeholder));
+    if (notes) {
+      expect(notes.required, 'notes are optional').toBe(false);
+    } else {
+      expect(await page.locator('textarea').getAttribute('required'),
+        'notes are optional').toBeNull();
+    }
   });
 
   test('TC-PAY-005 an empty form fails constraint validation before submit', async ({ page }) => {
