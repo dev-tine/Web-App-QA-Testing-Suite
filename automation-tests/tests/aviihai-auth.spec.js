@@ -1,89 +1,96 @@
 import { test, expect } from '@playwright/test';
-import dotenv from 'dotenv';
+import { loginAsDemoUser, hasCredentials, CREDENTIALS_MISSING } from './helpers/auth-helper.js';
 
-dotenv.config();
+/**
+ * Authentication.
+ *
+ * The unauthenticated cases run everywhere, including on forks and on pull
+ * requests where secrets are not exposed. The authenticated cases skip with a
+ * readable reason when credentials are absent, so a missing secret produces a
+ * skip rather than a false failure.
+ *
+ * Base URL comes from playwright.config.js. Every navigation here is relative,
+ * so the same suite runs against a staging build by setting BASE_URL.
+ */
 
-const baseURL = process.env.AVIIHAI_BASE_URL;
-
-async function loginAsDemoUser(page) {
-  await page.goto(baseURL);
-
-  await page.getByPlaceholder('officer@aviihai.com').fill(process.env.AVIIHAI_EMAIL);
-  await page.locator('input[type="password"]').fill(process.env.AVIIHAI_PASSWORD);
-  await page.getByRole('button', { name: /log in/i }).click();
-
-  await expect(page.getByText(/hello, officer/i)).toBeVisible({ timeout: 15000 });
-}
-
-test.describe('AVIIHAI Authentication', () => {
-  test('AUTH-001 login page loads successfully from base URL', async ({ page }) => {
-    await page.goto(baseURL);
+test.describe('Authentication, unauthenticated', () => {
+  test('TC-AUTH-001 the login page loads and renders every control', async ({ page }) => {
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL(/\/login/);
-
     await expect(page.getByText(/officer login/i)).toBeVisible();
-    await expect(page.getByPlaceholder('officer@aviihai.com')).toBeVisible();
+    await expect(page.locator('input[type="email"]')).toBeVisible();
     await expect(page.locator('input[type="password"]')).toBeVisible();
     await expect(page.getByRole('button', { name: /log in/i })).toBeVisible();
   });
 
-  test('AUTH-002 user can log in with valid demo account', async ({ page }) => {
-    await loginAsDemoUser(page);
-
-    await expect(page.getByText(/demo@user\.com/i)).toBeVisible();
-
-    await expect(
-      page.getByRole('button', { name: /payments record & view payments/i })
-    ).toBeVisible();
-
-    await expect(
-      page.getByRole('button', { name: /business clearance generate & track permits/i })
-    ).toBeVisible();
-
-    await expect(
-      page.getByRole('button', { name: /settings officers & app config/i })
-    ).toBeVisible();
+  test('TC-AUTH-002 the root path sends an unauthenticated visitor to login', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
   });
 
-  test('AUTH-003 invalid login credentials show an error message', async ({ page }) => {
-    await page.goto(baseURL);
+  test('TC-AUTH-003 rejected credentials keep the user on the login page', async ({ page }) => {
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
 
-    await page.getByPlaceholder('officer@aviihai.com').fill('wrong@example.com');
-    await page.locator('input[type="password"]').fill('wrongpass123');
+    await page.locator('input[type="email"]').fill('nobody@example.com');
+    await page.locator('input[type="password"]').fill('not-a-real-password');
     await page.getByRole('button', { name: /log in/i }).click();
 
     await expect(page).toHaveURL(/\/login/);
-    await expect(page.getByText(/invalid login credentials/i)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/invalid login credentials/i)).toBeVisible({ timeout: 15000 });
     await expect(page.getByRole('button', { name: /log in/i })).toBeVisible();
   });
 
-  test.describe('AUTH-004 Protected Route Access', () => {
-    const protectedRoutes = [
-      { name: 'Payments', path: '/payments/add' },
-      { name: 'Business Clearance', path: '/clearance/add' },
-      { name: 'Settings', path: '/settings' },
-    ];
+  test('TC-AUTH-004 protected routes are not reachable without a session', async ({ page }) => {
+    const protectedRoutes = ['/payments/add', '/payments/records', '/clearance/add', '/settings'];
 
     for (const route of protectedRoutes) {
-      test.skip(`AUTH-004 unauthenticated user should be redirected to login - ${route.name}`, async ({ page }) => {
-        await page.goto(`${baseURL}${route.path}`);
-
-        await expect(page).toHaveURL(/\/login/);
-        await expect(page.getByText(/officer login/i)).toBeVisible();
-        await expect(page.getByRole('button', { name: /log in/i })).toBeVisible();
-      });
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await expect(page, 'access control on ' + route).toHaveURL(/\/login/, { timeout: 20000 });
     }
   });
+});
 
-  test('AUTH-005 user can log out successfully', async ({ page }) => {
+test.describe('Authentication, authenticated', () => {
+  test.skip(!hasCredentials, CREDENTIALS_MISSING);
+
+  test('TC-AUTH-005 a valid demo account reaches the officer home', async ({ page }) => {
     await loginAsDemoUser(page);
 
-    const logoutButton = page.locator('button:has(svg.lucide-log-out)');
-    await expect(logoutButton).toBeVisible();
-    await logoutButton.click();
+    await expect(page).not.toHaveURL(/\/login/);
+    await expect(page.getByRole('heading', { name: /hello, officer/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /payments/i }).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: /business clearance/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /settings/i })).toBeVisible();
+  });
 
-    await expect(page).toHaveURL(/\/login/);
+  test('TC-AUTH-006 the session survives a page reload', async ({ page }) => {
+    await loginAsDemoUser(page);
+
+    await page.reload({ waitUntil: 'domcontentloaded' });
+
+    await expect(page).not.toHaveURL(/\/login/, { timeout: 20000 });
+    await expect(page.getByRole('heading', { name: /hello, officer/i })).toBeVisible();
+  });
+
+  test('TC-AUTH-007 signing out returns the user to the login page', async ({ page }) => {
+    await loginAsDemoUser(page);
+
+    const signOut = page.locator('button:has(svg.lucide-log-out)');
+    await expect(signOut).toBeVisible();
+    await signOut.click();
+
+    await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
     await expect(page.getByText(/officer login/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /log in/i })).toBeVisible();
+  });
+
+  test('TC-AUTH-008 a protected route is not reachable again after signing out', async ({ page }) => {
+    await loginAsDemoUser(page);
+
+    await page.locator('button:has(svg.lucide-log-out)').click();
+    await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
+
+    await page.goto('/settings', { waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
   });
 });
