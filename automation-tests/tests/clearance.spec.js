@@ -139,9 +139,15 @@ test.describe('Clearance, history view', () => {
     page.on('pageerror', (error) => errors.push(error.message));
 
     await page.getByPlaceholder(/search by name or control no/i).fill('zzz-no-such-business-zzz');
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
 
-    await expect(page.getByText(/no clearances found/i)).toBeVisible();
+    // The assertion is that the view reports an empty result, not that it uses
+    // one exact sentence. The two list modules word this differently, which is
+    // DEF-110, so matching on one phrase here would make this case fail for the
+    // wrong reason the day that defect is fixed.
+    const emptyState = page.getByText(/no (clearances|records|results) found/i).first();
+    await expect(emptyState, 'empty state after a search with no match').toBeVisible();
+
     expect(errors, 'uncaught page errors during search').toEqual([]);
   });
 
@@ -156,10 +162,12 @@ test.describe('Clearance, history view', () => {
     const app = new AppPage(page);
 
     await app.goto('/payments/records');
-    const payments = (await page.getByText(/no records found/i).innerText()).trim();
+    const payments = (await page.getByText(/no records found/i).first().innerText()).trim();
 
     await app.goto('/clearance/records');
-    const clearances = (await page.getByText(/no clearances found/i).innerText()).trim();
+    const clearances = (
+      await page.getByText(/no (clearances|records|results) found/i).first().innerText()
+    ).trim();
 
     const endsInStop = (text) => text.endsWith('.');
     expect(endsInStop(payments)).toBe(endsInStop(clearances));
