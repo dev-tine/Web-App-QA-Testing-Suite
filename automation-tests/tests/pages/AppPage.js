@@ -26,17 +26,37 @@ import { clientNavigate, openApp } from '../helpers/auth-helper.js';
  * to the module cards.
  */
 /**
+ * How to reach each route through the interface.
+ *
+ * Every route is reached the way an officer reaches it: click the module card
+ * on the officer home, then the Add or History tab. The History views used to
+ * be reached with the History API instead, and that was the source of a suite
+ * that failed two or three random cases per run. Driving the real controls
+ * removed it, and it tests the navigation on the way past.
+ *
+ * Cards are matched on their description text, not their title. The officer
+ * home also carries BACKUP PAYMENTS and BACKUP CLEARANCES buttons, and a title
+ * based match on /payments/i selects one of those instead of the module card.
+ * Those two controls write a file, so a suite that is meant to be read only
+ * must never click them by accident.
+ */
+const ROUTE_PLAN = {
+  '/': {},
+  '/payments/add': { card: /record & view payments/i, tab: 'add' },
+  '/payments/records': { card: /record & view payments/i, tab: 'history' },
+  '/clearance/add': { card: /generate & track permits/i, tab: 'add' },
+  '/clearance/records': { card: /generate & track permits/i, tab: 'history' },
+  '/settings': { card: /officers & app config/i },
+};
+
+/**
  * The heading that proves a route has finished rendering.
  *
- * The level one heading is NOT a usable signal here. It is the module name, so
- * it reads PAYMENTS on both the new payment form and the payment records view,
- * and Clearance on both clearance views. Waiting on it means the wait can pass
- * against the heading left over from the previous route, and the assertions
- * then run against a view that has not swapped yet. That produced a suite that
- * failed two random cases per run and passed on the retry, which is the worst
- * kind of failing suite: nobody believes it, so nobody reads it.
- *
- * The level two heading is unique per route, so it is what the wait uses.
+ * The level one heading is NOT a usable signal. It is the module name, so it
+ * reads PAYMENTS on both payment views and Clearance on both clearance views.
+ * Waiting on it can pass against the heading left over from the previous
+ * route, and the assertions then run against a view that has not swapped yet.
+ * The level two heading is unique per route, so that is what the wait uses.
  */
 const READY_HEADING = {
   '/': /hello, officer/i,
@@ -45,12 +65,6 @@ const READY_HEADING = {
   '/clearance/add': /new clearance/i,
   '/clearance/records': /clearance history/i,
   '/settings': /main officers/i,
-};
-
-const CARD_FOR_ROUTE = {
-  '/payments': /record & view payments/i,
-  '/clearance': /generate & track permits/i,
-  '/settings': /officers & app config/i,
 };
 
 export class AppPage {
@@ -62,39 +76,45 @@ export class AppPage {
     this.historyTab = page.getByRole('button', { name: /^history$/i });
   }
 
-  /** Route inside the loaded application, then wait for the view to settle. */
+  /** Waits for the heading that belongs to a given route. */
+  async waitForRoute(path, timeout = 25000) {
+    const ready = READY_HEADING[path];
+    if (!ready) return;
+    await this.page
+      .getByRole('heading', { name: ready })
+      .first()
+      .waitFor({ state: 'visible', timeout });
+  }
+
+  /**
+   * Navigates to a route through the interface, and falls back to the History
+   * API if a control does not appear. The fallback exists because a missing
+   * control should fail the case that is about that control, not every case
+   * that happens to start from that route.
+   */
   async goto(path) {
-    if (path === '/') {
-      await clientNavigate(this.page, '/');
-    } else {
-      const moduleRoot = Object.keys(CARD_FOR_ROUTE).find((key) => path.startsWith(key));
-      const card = moduleRoot ? CARD_FOR_ROUTE[moduleRoot] : null;
-      let navigated = false;
+    const plan = ROUTE_PLAN[path];
 
-      if (card) {
-        try {
-          await clientNavigate(this.page, '/');
-          await this.page.getByRole('button', { name: card }).first().click({ timeout: 15000 });
-          navigated = true;
-        } catch (error) {
-          navigated = false;
-        }
-      }
+    await clientNavigate(this.page, '/');
+    await this.waitForRoute('/');
 
-      if (!navigated || !this.page.url().endsWith(path)) {
-        await clientNavigate(this.page, path);
-      }
+    if (!plan || !plan.card) {
+      if (path !== '/') await clientNavigate(this.page, path);
+      await this.waitForRoute(path);
+      return;
     }
 
-    await this.h1.waitFor({ state: 'visible', timeout: 35000 });
+    try {
+      await this.page.getByRole('button', { name: plan.card }).first().click({ timeout: 15000 });
 
-    // Then wait for the heading that belongs to this route specifically.
-    const ready = READY_HEADING[path];
-    if (ready) {
-      await this.page
-        .getByRole('heading', { name: ready })
-        .first()
-        .waitFor({ state: 'visible', timeout: 20000 });
+      if (plan.tab === 'history') {
+        await this.historyTab.click({ timeout: 15000 });
+      }
+
+      await this.waitForRoute(path, 20000);
+    } catch (error) {
+      await clientNavigate(this.page, path);
+      await this.waitForRoute(path);
     }
   }
 
