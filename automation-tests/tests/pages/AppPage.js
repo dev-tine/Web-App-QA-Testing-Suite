@@ -25,6 +25,28 @@ import { clientNavigate, openApp } from '../helpers/auth-helper.js';
  * be read only must never click them by accident. The descriptions are unique
  * to the module cards.
  */
+/**
+ * The heading that proves a route has finished rendering.
+ *
+ * The level one heading is NOT a usable signal here. It is the module name, so
+ * it reads PAYMENTS on both the new payment form and the payment records view,
+ * and Clearance on both clearance views. Waiting on it means the wait can pass
+ * against the heading left over from the previous route, and the assertions
+ * then run against a view that has not swapped yet. That produced a suite that
+ * failed two random cases per run and passed on the retry, which is the worst
+ * kind of failing suite: nobody believes it, so nobody reads it.
+ *
+ * The level two heading is unique per route, so it is what the wait uses.
+ */
+const READY_HEADING = {
+  '/': /hello, officer/i,
+  '/payments/add': /new payment/i,
+  '/payments/records': /payment records/i,
+  '/clearance/add': /new clearance/i,
+  '/clearance/records': /clearance history/i,
+  '/settings': /main officers/i,
+};
+
 const CARD_FOR_ROUTE = {
   '/payments': /record & view payments/i,
   '/clearance': /generate & track permits/i,
@@ -65,6 +87,15 @@ export class AppPage {
     }
 
     await this.h1.waitFor({ state: 'visible', timeout: 35000 });
+
+    // Then wait for the heading that belongs to this route specifically.
+    const ready = READY_HEADING[path];
+    if (ready) {
+      await this.page
+        .getByRole('heading', { name: ready })
+        .first()
+        .waitFor({ state: 'visible', timeout: 20000 });
+    }
   }
 
   /** Reloads the application from the root. */
