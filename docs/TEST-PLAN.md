@@ -83,13 +83,34 @@ failures, so:
 In other words, the suite tells the team when a bug is fixed rather than
 requiring someone to remember to re enable a test.
 
-### 3.3 Missing credentials
+### 3.3 Flaky cases are defects in the suite
+
+A case that fails on one run and passes on the next teaches the team to ignore
+the pipeline, which costs more than the case was ever worth. Retries are off in
+this suite for that reason: a retry hides the instability instead of reporting
+it.
+
+The suite failed two or three random cases per run when it was first assembled.
+The causes were found and removed rather than papered over:
+
+| Cause | Why it produced a random failure | Fix |
+|---|---|---|
+| The wait after a route change looked for the level one heading | That heading is the module name, so it reads the same on both payment views and on both clearance views. The wait passed against the heading left over from the previous route and the assertions ran against a view that had not swapped yet. | Wait for the level two heading, which is unique per route. |
+| Route changes were driven through the History API | The router settled at its own pace and a fixed sleep was sometimes short. | Reach every route by clicking the module card and the Add or History tab, the way an officer does. It removes the race and tests the navigation on the way past. |
+| Sign out was clicked the moment the control appeared | The click sometimes landed before the handler was attached, so the session survived and the next assertion saw an address still inside the application. | Wait for the control and for the network to go quiet before clicking. |
+| Sign out was exercised by two cases | The second one repeated the whole flow just to build its own precondition, giving one journey two chances to fail. | Merged into one case that signs out and then checks the protected route. |
+
+Verified by three consecutive green runs on identical code, two of them started
+by hand with no commit in between. One green run proves nothing about a suite
+that fails intermittently, which is the trap this section exists to record.
+
+### 3.4 Missing credentials
 
 The authenticated suite skips, with a readable reason, when `DEMO_EMAIL` and
 `DEMO_PASSWORD` are absent. A missing secret on a fork or a pull request
 produces a skip, not a false failure. Credentials are never committed.
 
-### 3.4 Selector strategy
+### 3.5 Selector strategy
 
 The application exposes no `data-testid`, `id` or `name` attributes on its
 controls, recorded as DEF-104. Selectors therefore use, in order of preference:
