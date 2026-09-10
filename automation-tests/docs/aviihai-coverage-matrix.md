@@ -21,8 +21,7 @@ Defects: [`../../docs/DEFECT-LOG.md`](../../docs/DEFECT-LOG.md).
 | TC-AUTH-004 | A protected route is not shown to a visitor without a session | Security | High | Pass | |
 | TC-AUTH-005 | A valid demo account reaches the officer home | Smoke | High | Pass | |
 | TC-AUTH-006 | The session survives a page reload | Functional | Medium | Pass | |
-| TC-AUTH-007 | Signing out returns the user to the login page | Functional | Medium | Pass | |
-| TC-AUTH-008 | A protected route is not shown again after signing out | Security | High | Pass | |
+| TC-AUTH-007 | Signing out ends the session and closes the protected routes | Security | High | Pass | |
 | TC-AUTH-009 | A deep link resolves to the application | Availability | Critical | Expected fail | DEF-111 |
 
 ## Login page, field level
