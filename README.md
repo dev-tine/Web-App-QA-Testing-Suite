@@ -131,7 +131,7 @@ the [ECL case study](./manual-testing/case-studies/ecl-operations-hub/).
 
 | Area | Cases | Notes |
 |---|---|---|
-| Authentication and access control | 9 | Including deep link resolution and access after sign out |
+| Authentication and access control | 8 | Including deep link resolution and access after sign out |
 | Login page, field level and accessibility | 18 | WCAG 2.1 AA spot checks mapped to success criteria |
 | Officer home | 5 | |
 | Navigation and cross route structure | 10 | Title uniqueness, landmarks, accessible names |
