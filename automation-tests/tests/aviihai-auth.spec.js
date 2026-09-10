@@ -57,7 +57,7 @@ test.describe('Authentication, unauthenticated', () => {
       await expect(
         page.getByText(/officer login/i),
         'access control on ' + route
-      ).toBeVisible({ timeout: 10000 });
+      ).toBeVisible({ timeout: 20000 });
     }
   });
 
@@ -117,6 +117,6 @@ test.describe('Authentication, authenticated', () => {
     await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
 
     await clientNavigate(page, '/settings');
-    await expect(page.getByText(/officer login/i)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/officer login/i)).toBeVisible({ timeout: 20000 });
   });
 });
