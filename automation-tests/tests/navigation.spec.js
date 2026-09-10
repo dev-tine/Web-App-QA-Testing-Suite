@@ -28,13 +28,28 @@ test.describe('Navigation and cross route structure', () => {
     await loginAsDemoUser(page);
     const app = new AppPage(page);
 
+    // Every route is visited first and asserted once at the end, so a failure
+    // reports the whole map rather than stopping at the first surprise. Knowing
+    // which routes were right is as useful as knowing which one was wrong.
+    const observed = [];
     for (const route of ROUTES) {
       await app.goto(route.path);
       const snapshot = await app.structuralSnapshot();
-
-      expect(snapshot.h1Count, 'h1 count on ' + route.path).toBe(1);
-      await expect(app.h1, 'h1 text on ' + route.path).toHaveText(route.h1);
+      observed.push({
+        path: route.path,
+        h1Count: snapshot.h1Count,
+        h1: (await app.h1.first().innerText()).trim(),
+      });
     }
+
+    const wrongCount = observed.filter((o) => o.h1Count !== 1);
+    expect(wrongCount, 'routes not rendering exactly one h1').toEqual([]);
+
+    const mismatched = observed.filter((o) => {
+      const expected = ROUTES.find((r) => r.path === o.path).h1;
+      return !expected.test(o.h1);
+    });
+    expect(mismatched, 'routes whose h1 did not match the expected heading').toEqual([]);
   });
 
   test('TC-NAV-002 /clearance redirects to the clearance add form', async ({ page }) => {
