@@ -113,8 +113,17 @@ test.describe('Authentication, authenticated', () => {
   test('TC-AUTH-008 a protected route is not shown again after signing out', async ({ page }) => {
     await loginAsDemoUser(page);
 
-    await page.locator('button:has(svg.lucide-log-out)').click();
-    await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
+    // Wait for the control before clicking it. Clicking the moment it appears
+    // sometimes lands before the sign out handler is wired up, and the click
+    // is then a no-op: the session survives and the assertion below fails with
+    // an address that is still inside the application. That produced a case
+    // which failed roughly one run in three and passed on a re-run.
+    const signOut = page.locator('button:has(svg.lucide-log-out)');
+    await expect(signOut).toBeVisible();
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+    await signOut.click();
+
+    await expect(page).toHaveURL(/\/login/, { timeout: 25000 });
 
     await clientNavigate(page, '/settings');
     await expect(page.getByText(/officer login/i)).toBeVisible({ timeout: 20000 });
