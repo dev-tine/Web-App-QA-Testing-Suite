@@ -99,33 +99,31 @@ test.describe('Authentication, authenticated', () => {
     await expect(page.getByRole('heading', { name: /hello, officer/i })).toBeVisible();
   });
 
-  test('TC-AUTH-007 signing out returns the user to the login view', async ({ page }) => {
+  /**
+   * Sign out and the access check after it are one case, not two.
+   *
+   * They were separate, and the second one repeated the whole sign out flow to
+   * set up its own precondition. That second sign out failed roughly one run in
+   * three: the click landed before the handler was attached, so the session
+   * survived and the assertion saw an address still inside the application.
+   * Two cases covering one journey means two chances to be flaky for the price
+   * of one piece of coverage.
+   */
+  test('TC-AUTH-007 signing out ends the session and closes the protected routes', async ({ page }) => {
     await loginAsDemoUser(page);
 
-    const signOut = page.locator('button:has(svg.lucide-log-out)');
-    await expect(signOut).toBeVisible();
-    await signOut.click();
-
-    await expect(page).toHaveURL(/\/login/, { timeout: 20000 });
-    await expect(page.getByText(/officer login/i)).toBeVisible();
-  });
-
-  test('TC-AUTH-008 a protected route is not shown again after signing out', async ({ page }) => {
-    await loginAsDemoUser(page);
-
-    // Wait for the control before clicking it. Clicking the moment it appears
-    // sometimes lands before the sign out handler is wired up, and the click
-    // is then a no-op: the session survives and the assertion below fails with
-    // an address that is still inside the application. That produced a case
-    // which failed roughly one run in three and passed on a re-run.
     const signOut = page.locator('button:has(svg.lucide-log-out)');
     await expect(signOut).toBeVisible();
     await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
     await signOut.click();
 
-    await expect(page).toHaveURL(/\/login/, { timeout: 25000 });
+    await expect(page, 'sign out returns to the login view').toHaveURL(/\/login/, { timeout: 25000 });
+    await expect(page.getByText(/officer login/i)).toBeVisible();
 
     await clientNavigate(page, '/settings');
-    await expect(page.getByText(/officer login/i)).toBeVisible({ timeout: 20000 });
+    await expect(
+      page.getByText(/officer login/i),
+      'a protected route stays closed after signing out'
+    ).toBeVisible({ timeout: 20000 });
   });
 });
