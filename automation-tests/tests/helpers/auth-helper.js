@@ -54,11 +54,26 @@ export async function clientNavigate(page, path) {
   if (!page.url().includes('://')) {
     await openApp(page);
   }
+
   await page.evaluate((target) => {
     window.history.pushState({}, '', target);
     window.dispatchEvent(new PopStateEvent('popstate', { state: {} }));
   }, path);
-  await page.waitForTimeout(400);
+
+  // Wait for the router to actually settle instead of sleeping for a fixed
+  // interval. The route may end somewhere other than the requested path, for
+  // example when an access guard sends an unauthenticated visitor to /login,
+  // so this waits for the address to stop being the one we came from and then
+  // for the network to go quiet.
+  await page
+    .waitForFunction(
+      (target) => window.location.pathname === target || window.location.pathname === '/login',
+      path,
+      { timeout: 15000 }
+    )
+    .catch(() => {});
+
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 }
 
 /**
