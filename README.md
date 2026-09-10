@@ -80,7 +80,7 @@ API rather than a submit attempt: the suite reads `form.checkValidity()` and
 each control's `validity.valueMissing`, which is exactly what the browser
 consults before allowing a submit. Same assertion, nothing written.
 
-The limit is stated rather than hidden. This proves the browser blocks an
+The limit is stated up front. This proves the browser blocks an
 invalid submit. It does not prove the server rejects one. Server side
 validation is the first thing a seeded staging environment would unlock, and it
 is listed as such in the plan.
@@ -96,7 +96,7 @@ open defect are annotated `test.fail()`, so:
   unexpected pass.
 
 The suite tells the team when a bug is fixed, instead of relying on somebody
-remembering to re enable a test.
+remembering to re-enable a test.
 
 ### 3. A defect a person clicking around would never see
 
@@ -105,14 +105,13 @@ checks that the sign in form renders. When that failed, it printed what it
 actually received instead of only reporting a missing locator. The document
 title came back as "404: NOT_FOUND".
 
-The deployment serves no single page application fallback, so every bookmark,
-every shared link and every browser refresh on a sub route lands on the hosting
+The deployment serves no single-page application fallback, so every bookmark,
+every shared link and every browser refresh on a sub-route lands on the hosting
 provider's error page. Nobody clicking through the app would ever hit it,
 because in-app navigation never requests a new document. It is now DEF-111,
 Critical, with the one line fix in the defect log.
 
-That is the argument for automation that reports evidence rather than just
-pass or fail.
+That is the argument for automation that shows its working.
 
 ### 4. A finding that was retracted, kept in the record
 
@@ -123,7 +122,7 @@ timers the render path depends on.
 
 It was closed as not a defect and kept in the report with the reasoning
 attached. A finding that does not reproduce under normal conditions is not a
-finding, and the decision to close one belongs in the record. Full write up in
+finding, and the decision to close one belongs in the record. Full write-up in
 the [ECL case study](./manual-testing/case-studies/ecl-operations-hub/).
 
 ---
@@ -191,9 +190,8 @@ DEMO_EMAIL=your-demo-account@example.com
 DEMO_PASSWORD=your-demo-password
 ```
 
-The file is gitignored. Credentials are never committed, and the authenticated
-specs skip with a readable reason when they are absent, so a missing secret
-produces a skip rather than a false failure.
+That file is gitignored, so credentials never end up in the repo. Without them
+the authenticated specs just skip.
 
 ```bash
 npm test               # the full suite
@@ -209,7 +207,7 @@ Point the suite at another build with `BASE_URL=https://staging.example.com npm 
 
 The workflow runs on every push to `main`, on pull requests and on demand. It
 needs two repository secrets, `DEMO_EMAIL` and `DEMO_PASSWORD`, under
-**Settings, then Secrets and variables, then Actions**.
+**Settings → Secrets and variables → Actions**.
 
 Each run publishes the HTML report as an artifact, uploads traces and videos
 for any failure, and commits refreshed evidence screenshots back to
@@ -221,7 +219,7 @@ for any failure, and commits refreshed evidence screenshots back to
 
 **Automation.** Playwright Test, page object model, shared fixtures, role based
 and accessible name selectors, constraint validation through the DOM, expected
-failure annotations, cross viewport projects, trace and video on failure,
+failure annotations, cross-viewport projects, trace and video on failure,
 GitHub Actions with artifact publishing and evidence commit back.
 
 **Test design.** Test planning, scope and exclusion rationale, entry and exit
@@ -230,7 +228,7 @@ severity classification, deferred scope with named blockers.
 
 **Manual QA.** Test case authoring with preconditions and numbered steps,
 execution tracking, defect reporting with reproductions and evidence, retest
-and closure, WCAG 2.1 AA spot checking, front end timing read from the
+and closure, WCAG 2.1 AA spot checking, front-end timing read from the
 Navigation Timing API rather than a stopwatch.
 
 ---
