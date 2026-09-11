@@ -1,25 +1,52 @@
-# Manual Testing Documentation
-This folder is reserved for sanitized manual QA documentation, including test execution dashboards, bug tracking sheets, and sample test case records.
+# Manual QA Evidence
 
-Planned contents:
+This folder contains executed manual testing work, not placeholder templates.
+The main sample is a complete functional and accessibility test cycle for the
+ECL Operations Hub.
 
-- Sanitized Excel file with manual testing dashboard
-- 600+ test case execution documentation
-- Sample bug report screenshots
-- Test case execution screenshots
-- QA summary dashboard screenshots
-Before uploading any Excel file or screenshot, remove or replace confidential information such as company names, client names, private URLs, user data, internal tickets, employee names, credentials, and proprietary business details.
+## Start with the ECL case study
 
-Recommended sample file name:
+| Evidence | Open |
+| --- | --- |
+| Case-study walkthrough and findings | [`case-studies/ecl-operations-hub/README.md`](./case-studies/ecl-operations-hub/README.md) |
+| Downloadable Excel test report | [`ECL-Hub-Test-Report-Cycle1.xlsx`](./case-studies/ecl-operations-hub/ECL-Hub-Test-Report-Cycle1.xlsx) |
+| Selected defect records in GitHub-readable format | [`SELECTED-DEFECT-RECORDS.md`](./case-studies/ecl-operations-hub/SELECTED-DEFECT-RECORDS.md) |
+| Execution summary preview | [`execution-summary.png`](./case-studies/ecl-operations-hub/evidence/execution-summary.png) |
+| Test-case preview | [`test-cases.png`](./case-studies/ecl-operations-hub/evidence/test-cases.png) |
+| Defect-log preview | [`defect-log.png`](./case-studies/ecl-operations-hub/evidence/defect-log.png) |
 
-`manual-testing-execution-dashboard-sanitized.xlsx`
+## What the manual cycle demonstrates
 
-Screenshots should be placed inside:
+- Scope definition, exclusions, entry conditions, and test method
+- Functional, UI, navigation, empty-state, and accessibility testing
+- Test cases with preconditions, numbered steps, expected results, and actual results
+- Severity and priority assignment backed by user impact
+- Reproducible defects with environment and standards references
+- Retesting and closure of a false positive after identifying a test-environment artifact
+- Non-destructive testing against live data
+- Front-end timing checks using browser APIs instead of stopwatch estimates
 
-`manual-testing/screenshots/`
+## Results at a glance
 
-Recommended screenshot file names:
+| Metric | Result |
+| --- | ---: |
+| Test cases designed | 26 |
+| Test cases executed | 21 |
+| Passed | 17 |
+| Failed | 4 |
+| Not run, with reasons documented | 5 |
+| Defects raised | 5 |
+| Open defects | 4 |
+| Closed as not a defect after re-test | 1 |
 
-- `dashboard-screenshot.png`
-- `sample-bug-report.png`
-- `test-case-execution-sample.png`
+## Other evidence in this folder
+
+[`screenshots/`](./screenshots/) contains AVIIHAI application screenshots
+captured by the Playwright evidence spec and refreshed by CI. Those files
+support the automated test suite and are separate from the ECL manual cycle.
+
+## Privacy and evidence handling
+
+The ECL application is an internal operations system. The public case study
+therefore includes sanitized test records and rendered report previews. It does
+not publish credentials, private URLs, customer data, or proprietary records.
