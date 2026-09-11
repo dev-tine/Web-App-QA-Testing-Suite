@@ -8,6 +8,7 @@ ECL Operations Hub.
 
 | Evidence | Open |
 | --- | --- |
+| Professional manual QA scope and confidentiality boundary | [`PROFESSIONAL-SCOPE.md`](./PROFESSIONAL-SCOPE.md) |
 | Case-study walkthrough and findings | [`case-studies/ecl-operations-hub/README.md`](./case-studies/ecl-operations-hub/README.md) |
 | Downloadable Excel test report | [`ECL-Hub-Test-Report-Cycle1.xlsx`](./case-studies/ecl-operations-hub/ECL-Hub-Test-Report-Cycle1.xlsx) |
 | Selected defect records in GitHub-readable format | [`SELECTED-DEFECT-RECORDS.md`](./case-studies/ecl-operations-hub/SELECTED-DEFECT-RECORDS.md) |

@@ -3,6 +3,15 @@
 Every automated case, the module it covers, the type of check it performs, and
 the defect it is tied to where one exists.
 
+This matrix is the AVIIHAI test-case set. Its cases live beside the executable
+Playwright specs instead of in a manual spreadsheet: 71 automated cases plus
+12 evidence captures are mapped below. The images in
+[`manual-testing/screenshots`](../../manual-testing/screenshots/) are generated
+by the evidence spec and are not presented as manual execution screenshots.
+
+The separate [ECL case study](../../manual-testing/case-studies/ecl-operations-hub/)
+is the repository's executed manual test-cycle sample.
+
 Cases marked **Expected fail** assert the correct behaviour of a known open
 defect. They are annotated `test.fail()` in the suite, so the pipeline stays
 green while the defect is open and reports an unexpected pass the moment it is

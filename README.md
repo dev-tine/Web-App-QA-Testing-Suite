@@ -14,13 +14,14 @@ Two applications are under test, both live:
 
 | Application | What it is | Testing approach |
 |---|---|---|
-| **AVIIHAI HOA Management System** | A homeowners association back office for dues payments and business clearance permits | Automated, Playwright, runs in CI |
-| **ECL Operations Hub** | An internal operations platform for relationships, pipeline and work items | Manual cycle, documented in a formal test report |
+| **AVIIHAI HOA Management System** | A homeowners association back office for dues payments and business clearance permits | Executable Playwright cases, CI reports, and generated screenshots |
+| **ECL Operations Hub** | An internal operations platform for relationships, pipeline and work items | Executed manual workbook, defect records, and rendered report previews |
 
 ### Portfolio snapshot
 
 | Work sample | Evidence a reviewer can verify |
 | --- | --- |
+| **Professional manual QA scope** | 15 structured workbooks, 5,209 planned scenarios, 615 manually executed cases, 19 QA and UI defects, and 36 smoke-test observations; private artifacts withheld |
 | **ECL manual QA cycle** | 26 cases designed, 21 executed, 5 findings recorded, and 1 false positive retracted after investigation and re-test |
 | **AVIIHAI test automation** | Functional, regression, responsive, and accessibility checks mapped to requirements and defects, with CI reports, traces, videos, and refreshed screenshots |
 
@@ -30,6 +31,7 @@ Two applications are under test, both live:
 
 | If you want to see | Open |
 |---|---|
+| Verified professional manual QA scope | [`manual-testing/PROFESSIONAL-SCOPE.md`](./manual-testing/PROFESSIONAL-SCOPE.md) |
 | How the testing was planned and scoped | [`docs/TEST-PLAN.md`](./docs/TEST-PLAN.md) |
 | Every defect found, with reproduction steps | [`docs/DEFECT-LOG.md`](./docs/DEFECT-LOG.md) |
 | Which case covers which requirement and defect | [`automation-tests/docs/aviihai-coverage-matrix.md`](./automation-tests/docs/aviihai-coverage-matrix.md) |
@@ -68,6 +70,7 @@ Web-App-QA-Testing-Suite/
 │       └── portfolio-smoke.spec.js      External smoke check
 │
 ├── manual-testing/
+│   ├── PROFESSIONAL-SCOPE.md             Private-work scope, method, and disclosure boundary
 │   ├── case-studies/
 │   │   └── ecl-operations-hub/
 │   │       ├── ECL-Hub-Test-Report-Cycle1.xlsx
@@ -243,9 +246,11 @@ Navigation Timing API rather than a stopwatch.
 
 Manual QA experience from a software QA internship: test case design in
 spreadsheets, execution tracking, and defect reporting and retesting in ClickUp.
-The documentation style in this repository is carried over from that work, with
-the case study, defect log and traceability matrix rebuilt here against
-applications I can publish.
+That work included 15 structured QA workbooks, 5,209 planned scenarios, 615
+manually executed cases, 19 QA and UI defects, and 36 smoke-test observations.
+The [professional scope note](./manual-testing/PROFESSIONAL-SCOPE.md) documents
+the workflow and disclosure boundary. The public case study, defect log, and
+traceability matrix are rebuilt against applications I can publish.
 
 ---
 
