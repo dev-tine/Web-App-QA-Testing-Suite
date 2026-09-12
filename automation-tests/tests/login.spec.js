@@ -15,6 +15,10 @@ const EMAIL = process.env.DEMO_EMAIL;
 const PASSWORD = process.env.DEMO_PASSWORD;
 const hasCredentials = Boolean(EMAIL && PASSWORD);
 
+// Login coverage must start signed out even though product specs reuse the
+// authenticated storage state prepared by auth.setup.js.
+test.use({ storageState: { cookies: [], origins: [] } });
+
 test.describe('Login page, rendering and structure', () => {
   test.beforeEach(async ({ page }) => {
     await new LoginPage(page).goto();

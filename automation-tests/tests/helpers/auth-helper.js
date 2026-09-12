@@ -77,7 +77,11 @@ export async function clientNavigate(page, path) {
 }
 
 /**
- * Signs in and waits for the officer landing view.
+ * Opens an authenticated session and waits for the officer landing view.
+ *
+ * Product specs normally start with the storage state prepared by
+ * auth.setup.js, so this performs no password request in those cases. It keeps
+ * the form fallback for direct, focused runs that do not use the setup project.
  */
 export async function loginAsDemoUser(page) {
   if (!hasCredentials) {
@@ -85,11 +89,15 @@ export async function loginAsDemoUser(page) {
   }
 
   await openApp(page);
-  await page.locator('input[type="email"]').waitFor({ state: 'visible', timeout: 40000 });
-  await page.locator('input[type="email"]').fill(EMAIL);
+
+  const officerHome = page.getByRole('heading', { name: /hello, officer/i });
+  if (await officerHome.isVisible()) return;
+
+  const emailInput = page.locator('input[type="email"]');
+  await emailInput.waitFor({ state: 'visible', timeout: 40000 });
+  await emailInput.fill(EMAIL);
   await page.locator('input[type="password"]').fill(PASSWORD);
   await page.getByRole('button', { name: /log in/i }).click();
 
-  await expect(page.getByRole('heading', { name: /hello, officer/i }))
-    .toBeVisible({ timeout: 40000 });
+  await expect(officerHome).toBeVisible({ timeout: 40000 });
 }

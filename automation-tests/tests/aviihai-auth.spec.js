@@ -20,6 +20,8 @@ import {
  */
 
 test.describe('Authentication, unauthenticated', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
   test('TC-AUTH-001 the application loads and renders the sign in form', async ({ page }) => {
     await openApp(page);
 

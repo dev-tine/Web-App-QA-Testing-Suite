@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 import 'dotenv/config';
 
+const AUTH_STATE = './playwright/.auth/demo-user.json';
+
 /**
  * Playwright configuration for the AVIIHAI web application.
  *
@@ -8,10 +10,11 @@ import 'dotenv/config';
  * .env file, or as repository secrets when the suite runs in CI.
  *
  * Parallelism note. The suite is read only by design, documented in
- * docs/TEST-PLAN.md: no spec submits a form or writes a record. Because
- * nothing mutates shared state, the specs are safe to run in parallel, and
- * doing so keeps a full cross viewport run inside the CI budget. Restore
- * workers to 1 the day a write path is automated.
+ * docs/TEST-PLAN.md: no spec submits a form or writes a record. Authenticated
+ * product tests reuse one storage state prepared by auth.setup.js rather than
+ * issuing dozens of simultaneous password-token requests to the live backend.
+ * Because nothing mutates shared state, the specs remain safe to run in
+ * parallel. Restore workers to 1 the day a write path is automated.
  */
 export default defineConfig({
   testDir: './tests',
@@ -47,8 +50,22 @@ export default defineConfig({
 
   projects: [
     {
+      name: 'auth-setup',
+      testMatch: /auth\.setup\.js/,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: undefined,
+      },
+    },
+    {
       name: 'chromium-desktop',
-      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+      testIgnore: /auth\.setup\.js/,
+      dependencies: ['auth-setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1440, height: 900 },
+        storageState: AUTH_STATE,
+      },
     },
     {
       /**
@@ -65,7 +82,11 @@ export default defineConfig({
        */
       name: 'mobile-chrome',
       testMatch: /(evidence|portfolio-smoke)\.spec\.js/,
-      use: { ...devices['Pixel 7'] },
+      dependencies: ['auth-setup'],
+      use: {
+        ...devices['Pixel 7'],
+        storageState: AUTH_STATE,
+      },
     },
   ],
 });

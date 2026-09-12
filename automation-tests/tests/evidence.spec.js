@@ -34,6 +34,8 @@ const shot = async (page, name) => {
 };
 
 test.describe('Evidence capture, desktop, unauthenticated', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
   test.beforeEach(async ({}, testInfo) => {
     test.skip(testInfo.project.name !== DESKTOP,
       'Desktop evidence is captured once, from the desktop project');
@@ -119,7 +121,9 @@ test.describe('Evidence capture, desktop, authenticated', () => {
   });
 });
 
-test.describe('Evidence capture, mobile', () => {
+test.describe('Evidence capture, mobile, unauthenticated', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
   test.beforeEach(async ({}, testInfo) => {
     test.skip(testInfo.project.name !== MOBILE,
       'Mobile evidence is captured once, from the mobile project');
@@ -130,6 +134,13 @@ test.describe('Evidence capture, mobile', () => {
     await login.goto();
     await shot(page, 'aviihai-EV-011-login-mobile.png');
     await expect(login.submitButton).toBeVisible();
+  });
+});
+
+test.describe('Evidence capture, mobile, authenticated', () => {
+  test.beforeEach(async ({}, testInfo) => {
+    test.skip(testInfo.project.name !== MOBILE,
+      'Mobile evidence is captured once, from the mobile project');
   });
 
   test('EV-012 new payment form at a mobile viewport', async ({ page }) => {
