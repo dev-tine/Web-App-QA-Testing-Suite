@@ -176,7 +176,7 @@ study](./api-testing/).
 | Settings | 7 | Officer roster, directors, contacts |
 | Evidence capture | 12 | Desktop and mobile viewports |
 
-Eleven defects are open against the AVIIHAI build: one Critical, three Major and
+Twelve defects are open against the AVIIHAI build: one Critical, four Major and
 seven Minor. Each one has reproduction steps and, where it applies, the WCAG
 success criterion it breaches. See [`docs/DEFECT-LOG.md`](./docs/DEFECT-LOG.md).
 

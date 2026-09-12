@@ -83,6 +83,12 @@ failures, so:
 In other words, the suite tells the team when a bug is fixed rather than
 requiring someone to remember to re enable a test.
 
+DEF-112 is intermittent and uses a narrower rule. TC-AUTH-007 is marked as an
+expected failure only when the logout dependency is observed failing and the
+session remains open. A successful logout passes normally, while an unexplained
+failure still fails the build. This keeps a known external failure visible
+without turning every future pass into an unexpected-pass failure.
+
 ### 3.3 Flaky cases are defects in the suite
 
 A case that fails on one run and passes on the next teaches the team to ignore
@@ -174,6 +180,7 @@ A cycle is complete when:
 | Placeholder based selectors | Copy changes break the suite | Documented as DEF-104. Selector strategy is centralised in the page objects so a fix is a single file change. |
 | Background tab throttling in automated browsers | False timing and rendering defects | Learned the hard way on a previous cycle. See the retraction note in the ECL Operations Hub case study. Timing observations are not raised as defects without a foreground re test. |
 | Single test account | No role based coverage | Accepted for this cycle. Recorded as a gap. |
+| Global logout depends on an external auth request | A blocked request can leave the local session open | Track the request directly, retain trace evidence, and apply the conditional DEF-112 expectation only when the dependency failure is observed. |
 
 ## 8a. Open questions
 

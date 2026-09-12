@@ -31,6 +31,7 @@
 | DEF-109 | A clearance can be recorded without an address or capitalization | Minor | Specification question | Open, awaiting decision | TC-CLR-007 |
 | DEF-110 | Two list modules describe an empty result two different ways | Minor | Consistency | Open | TC-CLR-011 |
 | DEF-111 | Every deep link and page refresh returns a 404 | Critical | Availability | Open | TC-AUTH-009 |
+| DEF-112 | A failed logout request leaves the officer session open | Major | Session security | Open, intermittent dependency failure | TC-AUTH-007 |
 
 ---
 
@@ -247,6 +248,48 @@ Vercel that is a `vercel.json` with a rewrite from `/(.*)` to `/`.
 **Workaround in the suite.** Every spec enters at the site root and moves
 between routes inside the running application. That workaround is temporary and
 should be removed once the rewrite is deployed.
+
+---
+
+## DEF-112, Major
+
+**Title.** A failed logout request leaves the officer session open.
+
+**Severity.** Major.
+**Type.** Session security and external dependency handling.
+
+**Steps to reproduce.**
+
+1. Sign in as an officer.
+2. Select the icon-only sign-out control in the application header.
+3. Observe the request to the Supabase `/auth/v1/logout` endpoint.
+4. Reproduce while that request is blocked or returns an unsuccessful response.
+
+**Expected result.** The local officer session is cleared and the user returns
+to the login view even when global server-side revocation cannot complete. The
+application may also show that global logout was not confirmed.
+
+**Actual result.** When the logout request was blocked by CORS in the GitHub
+Actions environment, the application stayed on the officer home and retained
+the authenticated session for at least 25 seconds.
+
+**Impact.** A user who selected sign out can leave the device believing the
+session ended when it remains usable. Refreshing the page still exposes the
+authenticated application.
+
+**Evidence.** Playwright run `34678903382` captured the failed network request,
+browser CORS error, retained root URL, screenshot, video and trace. The issue is
+intermittent because the same path has completed successfully in other runs.
+
+**Fix.** Handle the logout promise explicitly. Clear the local session and
+return to the login view even when global revocation fails, then record or show
+the dependency error separately. Confirm that the Supabase project permits the
+production origin for logout requests.
+
+**Automation handling.** TC-AUTH-007 still requires the correct logout
+behaviour. It becomes an expected failure only when the logout endpoint is
+observed failing and the session remains open. A successful logout passes, while
+an unexplained retained session still fails the build.
 
 ## Note on a finding that was retracted
 
