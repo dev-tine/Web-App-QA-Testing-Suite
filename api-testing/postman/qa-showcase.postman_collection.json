@@ -1,0 +1,739 @@
+{
+  "info": {
+    "_postman_id": "61ec7a89-c998-4e52-9cf2-qa-portfolio-regression",
+    "name": "QA Portfolio API Regression",
+    "description": "Runnable Postman regression case study derived from academic API-testing experience. Uses only synthetic data against the included deterministic mock service.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.variables.set(\"requestStartedAt\", Date.now());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"API-CT-001 response includes a request ID\", function () {",
+          "  pm.expect(pm.response.headers.has(\"X-Request-Id\")).to.be.true;",
+          "  pm.expect(pm.response.headers.get(\"X-Request-Id\")).to.match(/^REQ-\\d{4}$/);",
+          "});",
+          "",
+          "pm.test(\"API-CT-002 response time is below one second\", function () {",
+          "  pm.expect(pm.response.responseTime).to.be.below(1000);",
+          "});",
+          "",
+          "if (pm.response.code !== 204) {",
+          "  pm.test(\"API-CT-003 non-empty response is JSON\", function () {",
+          "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+          "    pm.expect(function () { pm.response.json(); }).not.to.throw();",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "taskId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Setup and health",
+      "item": [
+        {
+          "name": "API-SET-001 reset isolated test data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Reset confirms an empty data set\", function () {",
+                  "  pm.expect(body).to.deep.equal({ status: \"reset\", taskCount: 0 });",
+                  "});",
+                  "pm.collectionVariables.unset(\"token\");",
+                  "pm.collectionVariables.unset(\"taskId\");"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/__reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "__reset"
+              ]
+            },
+            "description": "Automated API test case: API-SET-001 reset isolated test data"
+          },
+          "response": []
+        },
+        {
+          "name": "API-HLT-001 service health contract",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Health response matches the service contract\", function () {",
+                  "  pm.expect(body).to.have.all.keys(\"status\", \"service\", \"version\");",
+                  "  pm.expect(body.status).to.equal(\"ok\");",
+                  "  pm.expect(body.service).to.equal(\"qa-portfolio-api\");",
+                  "  pm.expect(body.version).to.match(/^\\d+\\.\\d+\\.\\d+$/);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Automated API test case: API-HLT-001 service health contract"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 Authentication",
+      "item": [
+        {
+          "name": "API-AUTH-001 valid credentials return a bearer token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Authentication response has the required fields and types\", function () {",
+                  "  pm.expect(body).to.have.all.keys(\"accessToken\", \"tokenType\", \"expiresIn\");",
+                  "  pm.expect(body.accessToken).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(body.tokenType).to.equal(\"Bearer\");",
+                  "  pm.expect(body.expiresIn).to.be.a(\"number\").and.above(0);",
+                  "});",
+                  "pm.collectionVariables.set(\"token\", body.accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Automated API test case: API-AUTH-001 valid credentials return a bearer token"
+          },
+          "response": []
+        },
+        {
+          "name": "API-AUTH-002 invalid credentials return a structured 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 401\", function () {",
+                  "  pm.response.to.have.status(401);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Invalid login follows the error contract\", function () {",
+                  "  pm.expect(body).to.have.property(\"error\");",
+                  "  pm.expect(body.error.code).to.equal(\"AUTH_INVALID\");",
+                  "  pm.expect(body.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(body).not.to.have.property(\"accessToken\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"incorrect-password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Automated API test case: API-AUTH-002 invalid credentials return a structured 401"
+          },
+          "response": []
+        },
+        {
+          "name": "API-AUTH-003 protected route rejects a missing token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 401\", function () {",
+                  "  pm.response.to.have.status(401);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Authorization error is explicit\", function () {",
+                  "  pm.expect(body.error.code).to.equal(\"AUTH_REQUIRED\");",
+                  "  pm.expect(body.error.message).to.include(\"bearer token\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            },
+            "description": "Automated API test case: API-AUTH-003 protected route rejects a missing token"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 Task workflow",
+      "item": [
+        {
+          "name": "API-TASK-001 new account starts with an empty task list",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test(\"List contract and initial state are correct\", function () {",
+                  "  pm.expect(body.data).to.be.an(\"array\").that.is.empty;",
+                  "  pm.expect(body.count).to.equal(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            },
+            "description": "Automated API test case: API-TASK-001 new account starts with an empty task list"
+          },
+          "response": []
+        },
+        {
+          "name": "API-TASK-002 create a valid high-priority task",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 201\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "const taskSchema = {",
+                  "  type: \"object\",",
+                  "  required: [\"id\", \"title\", \"priority\", \"completed\", \"createdAt\", \"updatedAt\"],",
+                  "  properties: {",
+                  "    id: { type: \"string\", pattern: \"^TASK-[0-9]+$\" },",
+                  "    title: { type: \"string\" },",
+                  "    priority: { enum: [\"low\", \"medium\", \"high\"] },",
+                  "    completed: { type: \"boolean\" },",
+                  "    createdAt: { type: \"string\" },",
+                  "    updatedAt: { type: \"string\" }",
+                  "  }",
+                  "};",
+                  "pm.test(\"Created resource matches schema and submitted values\", function () {",
+                  "  pm.expect(body.data).to.have.jsonSchema(taskSchema);",
+                  "  pm.expect(body.data.title).to.equal(\"Review API contract\");",
+                  "  pm.expect(body.data.priority).to.equal(\"high\");",
+                  "  pm.expect(body.data.completed).to.equal(false);",
+                  "});",
+                  "pm.collectionVariables.set(\"taskId\", body.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Review API contract\",\n  \"priority\": \"high\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            },
+            "description": "Automated API test case: API-TASK-002 create a valid high-priority task"
+          },
+          "response": []
+        },
+        {
+          "name": "API-TASK-003 retrieve the task created in this run",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Retrieved task matches the chained resource ID\", function () {",
+                  "  pm.expect(body.data.id).to.equal(pm.collectionVariables.get(\"taskId\"));",
+                  "  pm.expect(body.data.title).to.equal(\"Review API contract\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
+            },
+            "description": "Automated API test case: API-TASK-003 retrieve the task created in this run"
+          },
+          "response": []
+        },
+        {
+          "name": "API-TASK-004 update task state and title",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Update returns the changed fields without changing identity\", function () {",
+                  "  pm.expect(body.data.id).to.equal(pm.collectionVariables.get(\"taskId\"));",
+                  "  pm.expect(body.data.title).to.equal(\"API contract reviewed\");",
+                  "  pm.expect(body.data.completed).to.equal(true);",
+                  "  pm.expect(Date.parse(body.data.updatedAt)).to.be.at.least(Date.parse(body.data.createdAt));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"API contract reviewed\",\n  \"completed\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
+            },
+            "description": "Automated API test case: API-TASK-004 update task state and title"
+          },
+          "response": []
+        },
+        {
+          "name": "API-TASK-005 reject an empty required title",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 400\", function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Validation failure uses the documented error code\", function () {",
+                  "  pm.expect(body.error.code).to.equal(\"VALIDATION_ERROR\");",
+                  "  pm.expect(body.error.message).to.include(\"title is required\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"   \",\n  \"priority\": \"high\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            },
+            "description": "Automated API test case: API-TASK-005 reject an empty required title"
+          },
+          "response": []
+        },
+        {
+          "name": "API-TASK-006 missing task returns a structured 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 404\", function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Missing-resource error identifies the condition\", function () {",
+                  "  pm.expect(body.error.code).to.equal(\"TASK_NOT_FOUND\");",
+                  "  pm.expect(body.error.message).to.include(\"TASK-9999\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tasks/TASK-9999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "TASK-9999"
+              ]
+            },
+            "description": "Automated API test case: API-TASK-006 missing task returns a structured 404"
+          },
+          "response": []
+        },
+        {
+          "name": "API-TASK-007 delete the task created in this run",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 204\", function () {",
+                  "  pm.response.to.have.status(204);",
+                  "});",
+                  "pm.test(\"Successful deletion returns no response body\", function () {",
+                  "  pm.expect(pm.response.text()).to.equal(\"\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
+            },
+            "description": "Automated API test case: API-TASK-007 delete the task created in this run"
+          },
+          "response": []
+        },
+        {
+          "name": "API-TASK-008 deleted task is no longer retrievable",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status 404\", function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test(\"Teardown verification references the deleted task\", function () {",
+                  "  pm.expect(body.error.code).to.equal(\"TASK_NOT_FOUND\");",
+                  "  pm.expect(body.error.message).to.include(pm.collectionVariables.get(\"taskId\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
+            },
+            "description": "Automated API test case: API-TASK-008 deleted task is no longer retrievable"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,215 @@
+{
+  "info": {
+    "_postman_id": "7f185a1b-f86a-4878-a772-118da30b76d3",
+    "name": "A6 – Activity 9 – E-Commerce API (Destine)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50618296",
+    "_collection_link": "https://ic-destineapril-fortaliza-5552086.postman.co/workspace/DESTINE-APRIL-FORTALIZA's-Works~90d8776c-d3ca-42a0-828b-989e02a267d3/collection/50618296-7f185a1b-f86a-4878-a772-118da30b76d3?action=share&source=collection_link&creator=50618296",
+    "description": "Sanitized historical export from an academic Postman activity completed by Destine April Fortaliza. The original localhost backend is no longer available, so this collection is retained as request-design evidence and is not represented as a currently passing automated suite. Credentials, tokens, OTP values and personal email addresses were replaced before publication."
+  },
+  "item": [
+    {
+      "name": "GET /products — List Products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/products",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /users — Register User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Destine A9 User\",\r\n  \"email\": \"{{testEmail}}\",\r\n  \"password\": \"{{testPassword}}\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3001/users",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /cart — Add Item to Cart",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"productId\": 1,\r\n  \"quantity\": 2\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3001/cart",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "cart"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /cart — View Cart",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/cart",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "cart"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /orders — Create Order",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userId\": 1,\r\n  \"items\": [\r\n    { \"productId\": 8, \"quantity\": 1 },\r\n    { \"productId\": 1, \"quantity\": 2 }\r\n  ]\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3001/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /orders — List Orders",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH /orders/:id/status — Update Order Status",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": \"shipped\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3001/orders/1/status",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "orders",
+            "1",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE – Delete Order",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/orders/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "orders",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "testEmail",
+      "value": "qa.student@example.test",
+      "type": "string"
+    },
+    {
+      "key": "testPassword",
+      "value": "REPLACE_BEFORE_RUN",
+      "type": "string"
+    }
+  ]
+}

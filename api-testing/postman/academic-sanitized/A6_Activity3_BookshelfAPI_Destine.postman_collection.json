@@ -1,0 +1,405 @@
+{
+  "info": {
+    "_postman_id": "f4cffe37-8658-4219-888b-414cb54f2b42",
+    "name": "A6 – Activity 3 – Bookshelf API (Destine)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50618296",
+    "_collection_link": "https://ic-destineapril-fortaliza-5552086.postman.co/workspace/DESTINE-APRIL-FORTALIZA's-Works~90d8776c-d3ca-42a0-828b-989e02a267d3/collection/50618296-f4cffe37-8658-4219-888b-414cb54f2b42?action=share&source=collection_link&creator=50618296",
+    "description": "Sanitized historical export from an academic Postman activity completed by Destine April Fortaliza. The original localhost backend is no longer available, so this collection is retained as request-design evidence and is not represented as a currently passing automated suite. Credentials, tokens, OTP values and personal email addresses were replaced before publication."
+  },
+  "item": [
+    {
+      "name": "GET – API Root Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – List Authors",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/authors",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "authors"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST – Create Author",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Destine A6 Author\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3003/authors",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "authors"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – Get Author by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/authors/5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "authors",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH – Update Author",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Destine A6 Author (Updated)\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3003/authors/5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "authors",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE – Delete Author",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Destine A6 Author (Updated)\"\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3003/authors/5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "authors",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – List Categories",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/categories",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "categories"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST – Create Category",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"API Documentation\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3003/categories",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "categories"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – Get Category by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/categories/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "categories",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH – Update Category",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"API Docs (Updated)\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3003/categories/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "categories",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE – Delete Category",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/categories/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "categories",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – List Books",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/books",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "books"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST – Create Book",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"A6 API Documentation Book\",\r\n  \"publishedYear\": 2024,\r\n  \"isbn\": \"978-1-4028-9462-6\",\r\n  \"pageCount\": 250,\r\n  \"coverUrl\": \"https://example.com/cover.jpg\",\r\n  \"plot\": \"This book is created as part of Activity 3 for API documentation using Postman. It demonstrates how to perform CRUD operations on a Books resource, including creation, retrieval, updating, borrowing, returning, and deletion of books within a NestJS backend application.\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3003/books",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "books"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – Get Book by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/books/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "books",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH – Update Book",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"A6 API Documentation Book (Updated)\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3003/books/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "books",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST – Borrow Book",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/books/1/borrow",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "books",
+            "1",
+            "borrow"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE – Delete Book",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/books/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "books",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": []
+}

@@ -99,6 +99,7 @@ The causes were found and removed rather than papered over:
 | Route changes were driven through the History API | The router settled at its own pace and a fixed sleep was sometimes short. | Reach every route by clicking the module card and the Add or History tab, the way an officer does. It removes the race and tests the navigation on the way past. |
 | Sign out was clicked the moment the control appeared | The click sometimes landed before the handler was attached, so the session survived and the next assertion saw an address still inside the application. | Wait for the control and for the network to go quiet before clicking. |
 | Sign out was exercised by two cases | The second one repeated the whole flow just to build its own precondition, giving one journey two chances to fail. | Merged into one case that signs out and then checks the protected route. |
+| Every authenticated case performed a fresh password login | Concurrent cases sent dozens of password-token requests to the shared authentication service. Rate pressure and CORS failures made otherwise independent checks fail together. | Added a dedicated setup project that authenticates once and saves reusable storage state. Login behaviour remains covered by isolated authentication cases. |
 
 Verified by three consecutive green runs on identical code, two of them started
 by hand with no commit in between. One green run proves nothing about a suite
@@ -131,8 +132,9 @@ consequence of DEF-104 and is the argument for fixing it.
 | Browsers | Chromium desktop at 1440 x 900, and Pixel 7 mobile emulation |
 | Runner | GitHub Actions, ubuntu-latest, Node 20 |
 | Framework | Playwright Test |
-| Retries | 1 in CI, 0 locally |
-| Workers | 1, so the shared demo database is never hit concurrently |
+| Authentication | Setup project creates one reusable storage state; dedicated login cases start clean |
+| Retries | 0 in CI and locally |
+| Workers | 2; all automated product checks remain read only |
 | Artifacts | HTML report, trace, video and screenshot retained on failure |
 
 ## 5. Entry criteria

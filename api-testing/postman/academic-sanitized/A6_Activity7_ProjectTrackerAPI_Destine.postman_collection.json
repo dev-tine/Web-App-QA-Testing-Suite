@@ -1,0 +1,234 @@
+{
+  "info": {
+    "_postman_id": "585a56bb-f097-41bc-a1ca-866d1c411bcf",
+    "name": "A6 – Activity 7 – Project Tracker API (Destine)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50618296",
+    "_collection_link": "https://ic-destineapril-fortaliza-5552086.postman.co/workspace/DESTINE-APRIL-FORTALIZA's-Works~90d8776c-d3ca-42a0-828b-989e02a267d3/collection/50618296-585a56bb-f097-41bc-a1ca-866d1c411bcf?action=share&source=collection_link&creator=50618296",
+    "description": "Sanitized historical export from an academic Postman activity completed by Destine April Fortaliza. The original localhost backend is no longer available, so this collection is retained as request-design evidence and is not represented as a currently passing automated suite. Credentials, tokens, OTP values and personal email addresses were replaced before publication."
+  },
+  "item": [
+    {
+      "name": "GET /health — API Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /users — Create User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Destine A7 User\",\r\n  \"email\": \"{{testEmail}}\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /users — List Users",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /projects — Create Project",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"A7 Project Tracker\",\r\n  \"description\": \"Project created using Postman for Activity 7 documentation.\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/projects",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "projects"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /projects — List Projects",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/projects",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "projects"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /tasks — Create Task",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"A7 First Task\",\r\n  \"description\": \"Task created using Postman for Activity 7 documentation.\",\r\n  \"deadline\": \"2026-01-15T00:00:00.000Z\",\r\n  \"projectId\": \"42e3c835-9735-403d-8afe-e1992dccd2e2\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/tasks",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "tasks"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /tasks — List Tasks (by projectId)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/tasks?projectId=42e3c835-9735-403d-8afe-e1992dccd2e2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "tasks"
+          ],
+          "query": [
+            {
+              "key": "projectId",
+              "value": "42e3c835-9735-403d-8afe-e1992dccd2e2"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH /tasks/{id} — Update Task Status",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": \"IN_PROGRESS\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/tasks/4b67beac-33c3-42cf-ba4a-763916f83903",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "tasks",
+            "4b67beac-33c3-42cf-ba4a-763916f83903"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /tasks/{id} — Delete Task",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/tasks/4b67beac-33c3-42cf-ba4a-763916f83903",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "tasks",
+            "4b67beac-33c3-42cf-ba4a-763916f83903"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "testEmail",
+      "value": "qa.student@example.test",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "info": {
+    "_postman_id": "176fb8cb-3c18-4d91-8d98-886cedd578dd",
+    "name": "A6 – Activity 8 – Chatrooms API (Destine)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50618296",
+    "_collection_link": "https://ic-destineapril-fortaliza-5552086.postman.co/workspace/DESTINE-APRIL-FORTALIZA's-Works~90d8776c-d3ca-42a0-828b-989e02a267d3/collection/50618296-176fb8cb-3c18-4d91-8d98-886cedd578dd?action=share&source=collection_link&creator=50618296",
+    "description": "Sanitized historical export from an academic Postman activity completed by Destine April Fortaliza. The original localhost backend is no longer available, so this collection is retained as request-design evidence and is not represented as a currently passing automated suite. Credentials, tokens, OTP values and personal email addresses were replaced before publication."
+  },
+  "item": [
+    {
+      "name": "GET – List Rooms",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/rooms",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "rooms"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST – Create Room",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"A8 Chat Room\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/rooms",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "rooms"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – Get Room by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/rooms/510507c9-a652-4083-879e-5cc05393fa5e",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "rooms",
+            "510507c9-a652-4083-879e-5cc05393fa5e"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST – Send Message",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"senderName\": \"Destine\",\r\n  \"content\": \"Hello! This message was sent using Postman for Activity 8 documentation.\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/rooms/510507c9-a652-4083-879e-5cc05393fa5e/messages",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "rooms",
+            "510507c9-a652-4083-879e-5cc05393fa5e",
+            "messages"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – List Messages in Room",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/rooms/510507c9-a652-4083-879e-5cc05393fa5e/messages",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "rooms",
+            "510507c9-a652-4083-879e-5cc05393fa5e",
+            "messages"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE – Delete Message",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/messages/0449dabb-e617-44d5-9f5f-68f47a49717e",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "messages",
+            "0449dabb-e617-44d5-9f5f-68f47a49717e"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": []
+}

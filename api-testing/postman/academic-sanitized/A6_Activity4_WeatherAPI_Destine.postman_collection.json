@@ -1,0 +1,64 @@
+{
+  "info": {
+    "_postman_id": "5fe49340-8576-49b1-a9ca-149a683965b8",
+    "name": "A6 – Activity 4 – Weather API (Destine)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50618296",
+    "_collection_link": "https://ic-destineapril-fortaliza-5552086.postman.co/workspace/DESTINE-APRIL-FORTALIZA's-Works~90d8776c-d3ca-42a0-828b-989e02a267d3/collection/50618296-5fe49340-8576-49b1-a9ca-149a683965b8?action=share&source=collection_link&creator=50618296",
+    "description": "Sanitized historical export from an academic Postman activity completed by Destine April Fortaliza. The original localhost backend is no longer available, so this collection is retained as request-design evidence and is not represented as a currently passing automated suite. Credentials, tokens, OTP values and personal email addresses were replaced before publication."
+  },
+  "item": [
+    {
+      "name": "GET – Weather Forecast",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3004/weather/forecast?city=Imus",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3004",
+          "path": [
+            "weather",
+            "forecast"
+          ],
+          "query": [
+            {
+              "key": "city",
+              "value": "Imus"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – Current Weather",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3004/weather?city=Imus",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3004",
+          "path": [
+            "weather"
+          ],
+          "query": [
+            {
+              "key": "city",
+              "value": "Imus"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": []
+}

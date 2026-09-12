@@ -1,0 +1,283 @@
+{
+  "info": {
+    "_postman_id": "13461ac4-12b9-40de-89d4-d2efeb80fa0c",
+    "name": "A6 – Activity 2 – Notes API (Destine)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50618296",
+    "_collection_link": "https://ic-destineapril-fortaliza-5552086.postman.co/workspace/DESTINE-APRIL-FORTALIZA's-Works~90d8776c-d3ca-42a0-828b-989e02a267d3/collection/50618296-13461ac4-12b9-40de-89d4-d2efeb80fa0c?action=share&source=collection_link&creator=50618296",
+    "description": "Sanitized historical export from an academic Postman activity completed by Destine April Fortaliza. The original localhost backend is no longer available, so this collection is retained as request-design evidence and is not represented as a currently passing automated suite. Credentials, tokens, OTP values and personal email addresses were replaced before publication."
+  },
+  "item": [
+    {
+      "name": "POST – Register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"{{testEmail}}\",\r\n  \"password\": \"{{testPassword}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3002/auth/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST – Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"{{testEmail}}\",\r\n  \"password\": \"{{testPassword}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3002/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – List Notes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/notes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "notes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST – Create Note",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"A6 Notes Test\",\r\n  \"content\": \"Created using Postman for Activity 2 documentation.\",\r\n  \"category\": \"School\",\r\n  \"folder\": \"A6\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3002/notes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "notes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – Get Note by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/notes/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "notes",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH – Update Note",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"A6 Notes Test (Updated)\",\r\n  \"category\": \"API Docs\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3002/notes/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "notes",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE – Trash Note",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/notes/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "notes",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET – List Trashed Notes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/notes?trashed=1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "notes"
+          ],
+          "query": [
+            {
+              "key": "trashed",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST – Restore Note",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/notes/1/restore",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "notes",
+            "1",
+            "restore"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "testEmail",
+      "value": "qa.student@example.test",
+      "type": "string"
+    },
+    {
+      "key": "testPassword",
+      "value": "REPLACE_BEFORE_RUN",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

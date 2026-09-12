@@ -1,0 +1,14 @@
+{
+  "name": "postman-api-qa-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runnable Postman API testing case study with CI reporting.",
+  "type": "module",
+  "scripts": {
+    "start:mock": "node mock-api/server.js",
+    "test:api": "node scripts/run-postman.mjs"
+  },
+  "devDependencies": {
+    "postman-cli": "^1.56.1"
+  }
+}
